@@ -1,0 +1,115 @@
+<html>
+
+<body>
+
+
+<input type="file" name="file" id="file" multiple />
+<canvas id="canvas"> </canvas>
+
+</body>
+
+<script>
+//I'm not proud of this mess of a program
+canvas = document.getElementById("canvas");
+ctx = canvas.getContext("2d");
+backgroundLevel = 13;
+var titleArray = [];
+
+document.getElementById('file').onchange = function(){
+
+	renderDownload(this.files,0);
+
+  
+};
+
+function renderDownload(files,k)
+{
+	if(files.length==k)
+	{
+		console.log("stop");
+		return
+	}
+
+	console.log(k);
+	console.log(titleArray);
+	var file = files[k];
+	//console.log(this.files);
+	var reader = new FileReader();
+	reader.readAsText(file);
+	reader.title = file.name;
+	reader.onload = function(progressEvent){    
+		var fileContentArray = this.result.split(/\r\n|\n/);
+		for(var line = 0; line < fileContentArray.length-1; line++){
+		//console.log(line + "  "+ fileContentArray[line]);
+		}
+
+
+
+		var dataArray = new Array(fileContentArray.length)
+
+		for(var i=0;i<dataArray.length;i++)
+		{
+			dataArray[i] = fileContentArray[i].split(";")
+
+		}
+		canvas.width = dataArray.length;
+		canvas.height = dataArray[0].length;
+		renderCanvas(dataArray,this.title,canvas,ctx);
+		//console.log(dataArray);
+		downloadCanvasAsImage(canvas,this.title);
+		console.log(this.title);
+		k+=1
+		renderDownload(files,k);
+	};
+}
+
+function renderCanvas(data,title,canvas,ctx)
+{
+//console.log(data[0].length);
+
+	imgData = ctx.createImageData(data[0].length,data.length);
+	for(var i=0;i<imgData.data.length;i+=4)
+	{
+		var j=i/4;
+		var y=j%data[0].length;
+		var x=Math.floor(j/data[0].length);
+	
+		var level = (data[x][y]-backgroundLevel)/3;
+		var colour = getColour(level);
+	
+		imgData.data[i] = colour.r;
+		imgData.data[i+1] = colour.g;
+		imgData.data[i+2] = colour.b;
+		imgData.data[i+3] = 255;
+		//console.log(String(i) + " " + String(j) + " " + String(x) + " " + String(y));
+	
+	}
+	//console.log(0);
+	ctx.putImageData(imgData,0,0);
+	ctx.font = "15px Arial";
+	ctx.fillText(title, 10, 50);
+}
+
+
+function getColour(x) {
+r = Math.round(255*Math.sqrt(x)); 
+g = Math.round(255*Math.pow(x,3)); 
+b = Math.round(255*(Math.sin(2 * Math.PI * x)>=0?
+                   Math.sin(2 * Math.PI * x) : 0 ));
+
+return {r:r,g:g,b:b}
+}
+
+function downloadCanvasAsImage(canvas,title){
+    let downloadLink = document.createElement('a');
+    downloadLink.setAttribute('download', String(title) + '.png');
+    canvas.toBlob(function(blob) {
+      let url = URL.createObjectURL(blob);
+      downloadLink.setAttribute('href', url);
+      downloadLink.click();
+    });
+}
+</script>
+
+
+</html>

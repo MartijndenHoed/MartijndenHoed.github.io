@@ -1,0 +1,416 @@
+<html>
+
+<body>
+
+
+<input type="file" name="file" id="file" multiple />
+<canvas id="canvas"> </canvas>
+<canvas id="canvas2"> </canvas>
+<canvas id="canvas3"> </canvas>
+</body>
+
+<script>
+//I'm not proud of this mess of a program
+canvas = document.getElementById("canvas");
+ctx = canvas.getContext("2d");
+canvas2 = document.getElementById("canvas2");
+ctx2 = canvas2.getContext("2d");
+canvas3 = document.getElementById("canvas3");
+ctx3 = canvas3.getContext("2d");
+backgroundLevel = 13;
+var titleArray = [];
+angle = 1.5*0.0174532925;
+
+document.getElementById('file').onchange = function(){
+
+	renderDownload(this.files,0);
+
+  
+};
+
+function renderDownload(files,k)
+{
+	if(files.length==k)
+	{
+		console.log("stop");
+		return
+	}
+
+	//console.log(k);
+	//console.log(titleArray);
+	var file = files[k];
+	//console.log(this.files);
+	var reader = new FileReader();
+	reader.readAsText(file);
+	reader.title = file.name;
+	reader.onload = function(progressEvent){    
+		var fileContentArray = this.result.split(/\r\n|\n/);
+		for(var line = 0; line < fileContentArray.length-1; line++){
+		//console.log(line + "  "+ fileContentArray[line]);
+		}
+
+		index = findIndex(this.title);
+
+		var dataArray = new Array(fileContentArray.length)
+
+		for(var i=0;i<dataArray.length;i++)
+		{
+			dataArray[i] = fileContentArray[i].split(";")
+
+		}
+		canvas.width = dataArray[0].length;
+		canvas.height = dataArray.length;
+		
+		
+		dataArray2 = calcDerivativeX(smoothData(dataArray));
+		dataArray3 = addDerivativesAngled(dataArray2);
+		
+		renderCanvasSimple(dataArray3,this.title,canvas,ctx);
+		//renderCanvasThermal(smoothData(dataArray),this.title,canvas2,ctx2);
+		renderCanvasThermal(dataArray,this.title,canvas2,ctx2);
+		edges = detectEdges(dataArray3);
+		finalArray = trimEdges(dataArray,edges);
+		renderCanvasThermal(finalArray,this.title,canvas3,ctx3);
+		//console.log(dataArray);
+		downloadCanvasAsImage(canvas3,index);
+		console.log(this.title);
+		k+=1
+		renderDownload(files,k);
+	};
+}
+
+function trimEdges(data,edges)
+{
+length = edges[1]-edges[0];
+margin = 30;
+finalData = new Array(data.length-2*margin);
+for(var i = 0;i<finalData.length;i++)
+{
+	finalData[i] = new Array(length);
+	for(var j=0;j<finalData[i].length;j++)
+	{
+		x = Math.round(i + 30);
+		y = Math.round(j + edges[0] + x * Math.sin(angle));
+		finalData[i][j] = data[x][y];
+	
+	
+	}
+}
+
+
+return finalData;
+
+}
+
+function smoothData(data) 
+{
+	var newData = new Array(data.length);
+	for(var x=0;x<data.length;x++)
+	{
+		newData[x] = new Array(data[0].length);
+		newData[x].fill(0);
+	}
+	
+	for(var x=1;x<data.length-1;x++)
+	{
+		newData[x] = new Array(data[0].length);
+		newData[x].fill(0);
+		for(var y=1;y<data[0].length-1;y++)
+		{
+			var cof = 0.4;
+			var cof2 = (1-cof)/8;
+			
+			newData[x][y] = cof * data[x][y] + cof2 * (data[x+1][y]) + cof2 * (data[x-1][y])+ cof2 * (data[x][y-1])+ cof2 * (data[x][y+1]) +
+			cof2 * (data[x+1][y+1]) + cof2 * (data[x-1][y-1])+ cof2 * (data[x+1][y-1])+ cof2 * (data[x-1][y+1]);
+		
+		}
+	}
+
+	//console.log(newData);
+	return newData
+}
+
+function detectEdges(data)
+{
+var dataLine = data[0].slice(0,data[0].length-20);
+totalMax = Math.max(...dataLine);
+totalMaxIndex = dataLine.indexOf(totalMax);
+totalMaxIndexRatio = totalMaxIndex/dataLine.length;
+console.log(totalMaxIndexRatio);
+
+var margin = 5;
+
+if(totalMaxIndexRatio>0.5)
+{
+	newData = dataLine.slice(0,totalMaxIndex-margin);
+	secondMax = Math.max(...newData);
+	secondMaxIndex = dataLine.indexOf(secondMax);
+	console.log(secondMaxIndex);
+	trimmedData = newData.slice(secondMaxIndex+margin,newData.length);
+}
+
+if(totalMaxIndexRatio<0.5)
+{
+	newData = dataLine.slice(totalMaxIndex+margin,dataLine.length);
+	secondMax = Math.max(...newData);
+	secondMaxIndex = newData.indexOf(secondMax);
+	console.log(totalMaxIndex);
+	trimmedData = newData.slice(0,secondMaxIndex-margin);
+	console.log(newData.length);
+}
+
+console.log(dataLine.indexOf(secondMax));
+
+
+transPos = dataLine.indexOf(Math.max(...trimmedData));
+console.log(transPos);
+console.log("bruh");
+secondMaxIndex = dataLine.indexOf(secondMax);
+transPosRel = Math.max(secondMaxIndex,totalMaxIndex)-transPos;
+transPosRatio = transPosRel/(Math.abs(totalMaxIndex-secondMaxIndex));
+//return transPosRatio;
+
+
+
+var c = document.getElementById("canvas");
+var ctx = c.getContext("2d");
+ctx.beginPath();
+ctx.moveTo(transPos, 0);
+ctx.lineTo(transPos, data.length);
+ctx.strokeStyle = '#0000ff';
+ctx.stroke();
+
+ctx.beginPath();
+ctx.moveTo(totalMaxIndex, 0);
+ctx.lineTo(totalMaxIndex, data.length);
+ctx.strokeStyle = '#FFFF00';
+ctx.stroke();
+
+ctx.beginPath();
+ctx.moveTo(dataLine.indexOf(secondMax), 0);
+ctx.lineTo(dataLine.indexOf(secondMax), data.length);
+ctx.strokeStyle = '#00FF00';
+ctx.stroke();
+
+var c = document.getElementById("canvas2");
+var ctx = c.getContext("2d");
+ctx.beginPath();
+ctx.moveTo(transPos, 0);
+ctx.lineTo( transPos + 0.5* data.length*Math.sin(angle), 0.5* data.length);
+ctx.strokeStyle = '#0000ff';
+ctx.stroke();
+
+ctx.beginPath();
+ctx.moveTo(totalMaxIndex, 0);
+ctx.lineTo(totalMaxIndex +  data.length*Math.sin(angle),  data.length);
+ctx.strokeStyle = '#FFFF00';
+ctx.stroke();
+
+ctx.beginPath();
+ctx.moveTo(dataLine.indexOf(secondMax), 0);
+ctx.lineTo(dataLine.indexOf(secondMax) +  data.length*Math.sin(angle),  data.length);
+ctx.strokeStyle = '#00FF00';
+ctx.stroke();
+
+return [Math.min(secondMaxIndex,totalMaxIndex),Math.max(secondMaxIndex,totalMaxIndex)]
+}
+
+function isNumeric(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
+function addDerivativesAngled(data)
+{
+	var lineData = new Array(data[0].length);
+	lineData.fill(0);
+	for(var x=70;x<110;x++)
+	{
+		for(var y=2;y<data[0].length-2;y++)
+		{
+			Y = Math.round(y - x * Math.sin(angle));
+			lineData[Y] += (data[x][y-1]/data[0].length)*0.5+(data[x][y]/data[0].length)+(data[x][y+1]/data[0+2].length)*0.5;
+		}
+	}
+	for(var x=180;x<data.length-240;x++)
+	{
+		for(var y=2;y<data[0].length-2;y++)
+		{
+			Y = Math.round(y - x * Math.sin(angle));
+			lineData[Y] += (data[x][y-1]/data[0].length)*0.5+(data[x][y]/data[0].length)+(data[x][y+1]/data[0+2].length)*0.5;
+		}
+	}
+	for(var x=280;x<data.length-370;x++)
+	{
+		for(var y=2;y<data[0].length-2;y++)
+		{
+			Y = Math.round(y - x * Math.sin(angle));
+			lineData[Y] += (data[x][y-1]/data[0].length)*0.5+(data[x][y]/data[0].length)+(data[x][y+1]/data[0+2].length)*0.5;
+		}
+	}
+
+	
+	for(var y=0;y<data[0].length;y++)
+	{
+		lineData[y] = Math.abs(lineData[y])*5;//0.5;
+	}
+	//console.log(data[0]);
+	var newData = new Array(data.length);
+	for(var x=0;x<data.length;x++)
+	{
+		newData[x] = new Array(data[0].length);
+	
+		for(var y=0;y<data[0].length;y++)
+		{
+			newData[x][y] = lineData[y];
+		
+		}
+	}
+
+
+
+	//console.log(lineData);
+	return newData
+}
+
+function calcDerivativeX(data)
+{
+	//console.log(data);
+	var newData = new Array(data.length);
+	for(var x=0;x<data.length;x++)
+	{
+		newData[x] = new Array(data[0].length);
+	
+		for(var y=0;y<data[0].length;y++)
+		{
+			if(y == data[0].length-1 || x == data.length-1)
+			{
+				newData[x][y] = 0;
+			}
+			else
+			{
+				newData[x][y] = 1.5*(data[x][y+1]-data[x][y]);
+			}
+		
+		}
+	}
+
+	//console.log(newData);
+	return newData
+}
+
+function renderCanvasSimple(data,title,canvas,ctx)
+{
+//console.log(data[0].length);
+	canvas.width = data[0].length;
+	canvas.height = data.length;
+	imgData = ctx.createImageData(data[0].length,data.length);
+	for(var i=0;i<imgData.data.length;i+=4)
+	{
+		var j=i/4;
+		var y=j%data[0].length;
+		var x=Math.floor(j/data[0].length);
+	
+		var level = data[x][y];
+	
+		imgData.data[i] = level*255;
+		imgData.data[i+1] = level*255;
+		imgData.data[i+2] = level*255;
+		imgData.data[i+3] = 255;
+		//console.log(String(i) + " " + String(j) + " " + String(x) + " " + String(y));
+	
+	}
+	//console.log(0);
+	ctx.putImageData(imgData,0,0);
+	ctx.font = "15px Arial";
+	ctx.fillText(title, 10, 50);
+} 
+
+function renderCanvasThermal(data,title,canvas,ctx)
+{
+//console.log(data[0].length);
+	canvas.width = data[0].length;
+	canvas.height = data.length;
+	console.log(data);
+	imgData = ctx.createImageData(data[0].length,data.length);
+	for(var i=0;i<imgData.data.length;i+=4)
+	{
+		var j=i/4;
+		var y=j%data[0].length;
+		var x=Math.floor(j/data[0].length);
+	
+		
+	
+		var level = (data[x][y]-backgroundLevel)/4;
+		
+
+		//if(x>data.length-60) {level=1};
+		
+		//level = (x + y)/100;
+		var colour = getColour(level);
+	
+		imgData.data[i] = colour.r;
+		imgData.data[i+1] = colour.g;
+		imgData.data[i+2] = colour.b;
+		imgData.data[i+3] = 255;
+		//console.log(String(i) + " " + String(j) + " " + String(x) + " " + String(y));
+	
+	}
+	//console.log(0);
+	ctx.putImageData(imgData,0,0);
+	ctx.font = "15px Arial";
+	ctx.fillText(title, 10, 50);
+}
+
+
+function getColour(x) {
+r = Math.round(255*Math.sqrt(x)); 
+g = Math.round(255*Math.pow(x,3)); 
+b = Math.round(255*(Math.sin(2 * Math.PI * x)>=0?
+                   Math.sin(2 * Math.PI * x) : 0 ));
+
+return {r:r,g:g,b:b}
+}
+
+function downloadCanvasAsImage(canvas,title){
+    let downloadLink = document.createElement('a');
+    downloadLink.setAttribute('download', String(title) + '.png');
+    canvas.toBlob(function(blob) {
+      let url = URL.createObjectURL(blob);
+      downloadLink.setAttribute('href', url);
+      downloadLink.click();
+    });
+}
+
+
+indexList = [["16-42-59","16-42-59_0","16-42-59_1","16-42-59_2","16-43-00","16-43-00_0","16-43-00_1","16-43-01","16-43-01_0","16-43-01_1"],["16-44-07","16-44-08","16-44-08_0","16-44-08_1","16-44-08_2","16-44-09","16-44-09_0","16-44-09_1","16-44-09_2","16-44-10"],["16-44-36","16-44-36_0","16-44-36_1","16-44-37","16-44-37_0","16-44-37_1","16-44-37_2","16-44-38","16-44-38_0","16-44-38_1"],["16-45-03","16-45-03_0","16-45-04","16-45-04_0","16-45-04_1","16-45-05","16-45-05_0","16-45-05_1","16-45-05_2","16-45-05_3"],["16-45-25","16-45-25_0","16-45-26","16-45-26_0","16-45-26_1","16-45-27","16-45-27_0","16-45-27_1"],["16-45-51","16-45-51_0","16-45-51_1","16-45-51_2","16-45-52","16-45-52_0","16-45-52_1","16-45-52_2","16-45-53"],["16-46-39","16-46-39_0","16-46-39_1","16-46-39_2","16-46-40","16-46-40_0","16-46-40_1","16-46-40_2","16-46-41","16-46-41_0"],["16-47-16","16-47-16_0","16-47-16_1","16-47-17","16-47-17_0","16-47-17_1","16-47-17_2","16-47-18","16-47-18_0","16-47-18_1"],["16-47-35","16-47-35_0","16-47-35_1","16-47-36","16-47-36_0","16-47-36_1","16-47-37","16-47-37_0","16-47-37_1"],["16-47-52","16-47-53","16-47-53_0","16-47-53_1","16-47-53_2","16-47-54","16-47-54_0","16-47-54_1","16-47-54_2"],["16-48-13","16-48-13_0","16-48-14","16-48-14_0","16-48-14_1","16-48-14_2","16-48-15","16-48-15_0","16-48-15_1"],["16-51-43","16-51-43_0","16-51-43_1","16-51-43_2","16-51-44","16-51-44_0","16-51-44_1","16-51-45","16-51-45_0"],["16-52-05","16-52-05_0","16-52-05_1","16-52-06","16-52-06_0","16-52-06_1","16-52-06_2","16-52-07","16-52-07_0","16-52-07_1"],["16-52-33","16-52-34","16-52-34_0","16-52-34_1","16-52-35","16-52-35_0","16-52-35_1","16-52-35_2","16-52-36","16-52-36_0"],["16-52-58","16-52-59","16-52-59_0","16-52-59_1","16-53-00","16-53-00_0","16-53-00_1","16-53-00_2","16-53-01","16-53-01_0"],["16-53-19","16-53-19_0","16-53-19_1","16-53-19_2","16-53-20","16-53-20_0","16-53-20_1","16-53-21","16-53-21_0"],["16-53-38","16-53-38_0","16-53-38_1","16-53-38_2","16-53-39","16-53-39_0","16-53-39_1","16-53-39_2","16-53-40","16-53-40_0"],["16-53-55","16-53-56","16-53-56_0","16-53-56_1","16-53-56_2","16-53-57","16-53-57_0","16-53-57_1","16-53-57_2","16-53-58"],["16-54-11","16-54-12","16-54-12_0","16-54-12_1","16-54-12_2","16-54-13","16-54-13_0","16-54-13_1","16-54-13_2","16-54-14"],["16-54-29","16-54-29_0","16-54-29_1","16-54-30","16-54-30_0","16-54-30_1","16-54-30_2","16-54-31","16-54-31_0","16-54-31_1"],["16-55-01","16-55-01_0","16-55-01_1","16-55-01_2","16-55-02","16-55-02_0","16-55-02_1","16-55-02_2","16-55-03","16-55-03_0"],["16-55-19","16-55-19_0","16-55-20","16-55-20_0","16-55-20_1","16-55-20_2","16-55-21","16-55-21_0","16-55-21_1"],["16-55-42","16-55-42_0","16-55-42_1","16-55-43","16-55-43_0","16-55-43_1","16-55-43_2","16-55-44","16-55-44_0"],["16-56-01","16-56-01_0","16-56-01_1","16-56-02","16-56-02_0","16-56-02_1","16-56-02_2","16-56-03","16-56-03_0","16-56-03_1"],["16-56-20","16-56-21","16-56-21_0","16-56-21_1","16-56-22","16-56-22_0","16-56-22_1","16-56-22_2","16-56-22_3","16-56-23"],["16-56-38","16-56-38_0","16-56-38_1","16-56-39","16-56-39_0","16-56-39_1","16-56-40","16-56-40_0","16-56-40_1"],["16-56-58","16-56-58_0","16-56-58_1","16-56-59","16-56-59_0","16-56-59_1","16-56-59_2","16-57-00","16-57-00_0"],["16-57-17","16-57-17_0","16-57-17_1","16-57-18","16-57-18_0","16-57-18_1","16-57-18_2","16-57-19","16-57-19_0"],["16-57-42","16-57-42_0","16-57-43","16-57-43_0","16-57-43_1","16-57-44","16-57-44_0","16-57-44_1","16-57-44_2"],["16-58-01","16-58-01_0","16-58-01_1","16-58-02","16-58-02_0","16-58-02_1","16-58-02_2","16-58-03","16-58-03_0","16-58-03_1"],["16-58-36","16-58-36_0","16-58-36_1","16-58-37","16-58-37_0","16-58-37_1","16-58-37_2","16-58-38","16-58-38_0","16-58-38_1"],["16-58-55","16-58-55_0","16-58-55_1","16-58-55_2","16-58-56","16-58-56_0","16-58-56_1","16-58-56_2","16-58-57","16-58-57_0"],["16-59-15","16-59-15_0","16-59-16","16-59-16_0","16-59-16_1","16-59-16_2","16-59-17","16-59-17_0","16-59-17_1","16-59-17_2"],["16-59-43","16-59-43_0","16-59-43_1","16-59-44","16-59-44_0","16-59-44_1","16-59-44_2","16-59-45","16-59-45_0","16-59-45_1"],["17-00-05","17-00-05_0","17-00-05_1","17-00-05_2","17-00-06","17-00-06_0","17-00-06_1","17-00-07","17-00-07_0","17-00-07_1"],["17-00-23","17-00-23_0","17-00-24","17-00-24_0","17-00-24_1","17-00-25","17-00-25_0","17-00-25_1","17-00-25_2"],["17-00-43","17-00-43_0","17-00-43_1","17-00-43_2","17-00-44","17-00-44_0","17-00-44_1","17-00-44_2","17-00-44_3"],["17-01-03","17-01-03_0","17-01-03_1","17-01-03_2","17-01-04","17-01-04_0","17-01-04_1","17-01-04_2","17-01-05"],["17-01-22","17-01-22_0","17-01-22_1","17-01-23","17-01-23_0","17-01-23_1","17-01-23_2","17-01-24","17-01-24_0"],["17-01-40","17-01-40_0","17-01-41","17-01-41_0","17-01-41_1","17-01-42","17-01-42_0","17-01-42_1","17-01-42_2"],["17-01-59","17-02-00","17-02-00_0","17-02-00_1","17-02-00_2","17-02-01","17-02-01_0","17-02-01_1","17-02-01_2","17-02-02"],["17-02-20","17-02-20_0","17-02-21","17-02-21_0","17-02-21_1","17-02-21_2","17-02-22","17-02-22_0","17-02-22_1","17-02-22_2"],["17-02-59","17-02-59_0","17-02-59_1","17-02-59_2","17-03-00","17-03-00_0","17-03-00_1","17-03-00_2"],["17-03-26","17-03-26_0","17-03-26_1","17-03-26_2","17-03-27","17-03-27_0","17-03-27_1","17-03-27_2"],["17-03-52","17-03-53","17-03-53_0","17-03-53_1","17-03-53_2","17-03-54","17-03-54_0","17-03-54_1","17-03-54_2","17-03-55"],["17-04-20","17-04-20_0","17-04-21","17-04-21_0","17-04-21_1","17-04-22","17-04-22_0","17-04-22_1","17-04-22_2","17-04-22_3"],["17-04-39","17-04-39_0","17-04-40","17-04-40_0","17-04-40_1","17-04-40_2","17-04-41","17-04-41_0","17-04-41_1","17-04-41_2"],["17-05-00","17-05-01","17-05-01_0","17-05-01_1","17-05-01_2","17-05-02","17-05-02_0","17-05-02_1","17-05-03","17-05-03_0"],["17-05-18","17-05-18_0","17-05-18_1","17-05-19","17-05-19_0","17-05-19_1","17-05-19_2","17-05-20","17-05-20_0","17-05-20_1"],["17-05-34","17-05-34_0","17-05-34_1","17-05-35","17-05-35_0","17-05-35_1","17-05-35_2","17-05-36","17-05-36_0","17-05-36_1"],["17-05-51","17-05-52","17-05-52_0","17-05-52_1","17-05-53","17-05-53_0","17-05-53_1","17-05-53_2","17-05-54","17-05-54_0"],["17-06-04","17-06-04_0","17-06-04_1","17-06-05","17-06-05_0","17-06-05_1","17-06-05_2","17-06-06","17-06-06_0","17-06-06_1"],["17-06-30","17-06-30_0","17-06-30_1","17-06-31","17-06-31_0","17-06-31_1","17-06-32","17-06-32_0","17-06-32_1","17-06-32_2"]];
+//indexList = [["15-44-58","15-44-58_0","15-44-59","15-44-59_0","15-44-59_1","15-45-00","15-45-00_0","15-45-00_1","15-45-00_2"],["15-46-24","15-46-24_0","15-46-24_1","15-46-25","15-46-25_0","15-46-25_1","15-46-25_2","15-46-26","15-46-26_0","15-46-26_1"],["15-47-32","15-47-32_0","15-47-32_1","15-47-33","15-47-33_0","15-47-33_1","15-47-34","15-47-34_0","15-47-34_1","15-47-35"],["15-48-33","15-48-33_0","15-48-33_1","15-48-34","15-48-34_0","15-48-34_1","15-48-35","15-48-35_0","15-48-35_1","15-48-35_2"],["15-49-06","15-49-06_0","15-49-07","15-49-07_0","15-49-07_1","15-49-08","15-49-08_0","15-49-08_1","15-49-08_2","15-49-09"],["15-49-53","15-49-54","15-49-54_0","15-49-54_1","15-49-55","15-49-55_0","15-49-55_1","15-49-55_2","15-49-56"],["15-50-26","15-50-26_0","15-50-27","15-50-27_0","15-50-27_1","15-50-27_2","15-50-28","15-50-28_0","15-50-28_1","15-50-29"],["15-51-01","15-51-01_0","15-51-01_1","15-51-02","15-51-02_0","15-51-02_1","15-51-02_2","15-51-03","15-51-03_0","15-51-03_1"],["15-51-26","15-51-26_0","15-51-27","15-51-27_0","15-51-27_1","15-51-27_2","15-51-28","15-51-28_0","15-51-28_1","15-51-29"],["15-52-08","15-52-08_0","15-52-09","15-52-09_0","15-52-09_1","15-52-09_2","15-52-10","15-52-10_0","15-52-10_1"],["15-52-53","15-52-53_0","15-52-53_1","15-52-54","15-52-54_0","15-52-54_1","15-52-54_2","15-52-55","15-52-55_0","15-52-55_1"],["15-53-33","15-53-34","15-53-34_0","15-53-34_1","15-53-34_2","15-53-35","15-53-35_0","15-53-35_1","15-53-36"],["15-54-36","15-54-36_0","15-54-37","15-54-37_0","15-54-37_1","15-54-37_2","15-54-38","15-54-38_0","15-54-38_1","15-54-39"],["15-55-02","15-55-02_0","15-55-02_1","15-55-03","15-55-03_0","15-55-03_1","15-55-04","15-55-04_0","15-55-04_1","15-55-04_2"],["15-55-56","15-55-56_0","15-55-57","15-55-57_0","15-55-57_1","15-55-57_2","15-55-58","15-55-58_0","15-55-58_1"],["15-56-31","15-56-31_0","15-56-32","15-56-32_0","15-56-32_1","15-56-32_2","15-56-33","15-56-33_0","15-56-33_1","15-56-33_2"],["15-57-08","15-57-09","15-57-09_0","15-57-09_1","15-57-10","15-57-10_0","15-57-10_1","15-57-11","15-57-11_0"],["15-57-41","15-57-41_0","15-57-42","15-57-42_0","15-57-42_1","15-57-43","15-57-43_0","15-57-43_1","15-57-43_2"],["15-58-23","15-58-23_0","15-58-23_1","15-58-24","15-58-24_0","15-58-24_1","15-58-24_2","15-58-25","15-58-25_0"],["15-58-48","15-58-48_0","15-58-48_1","15-58-49","15-58-49_0","15-58-49_1","15-58-50","15-58-50_0","15-58-50_1","15-58-50_2"],["15-59-13","15-59-13_0","15-59-14","15-59-14_0","15-59-14_1","15-59-14_2","15-59-15","15-59-15_0"],["15-59-40","15-59-40_0","15-59-40_1","15-59-40_2","15-59-41","15-59-41_0","15-59-41_1","15-59-42","15-59-42_0","15-59-42_1"],["16-00-05","16-00-06","16-00-06_0","16-00-06_1","16-00-06_2","16-00-07","16-00-07_0","16-00-07_1","16-00-08","16-00-08_0"],["16-00-30","16-00-30_0","16-00-31","16-00-31_0","16-00-31_1","16-00-31_2","16-00-32","16-00-32_0","16-00-32_1","16-00-33"],["16-00-53","16-00-54","16-00-54_0","16-00-54_1","16-00-54_2","16-00-55","16-00-55_0","16-00-56","16-00-56_0","16-00-56_1"],["16-01-22","16-01-22_0","16-01-22_1","16-01-23","16-01-23_0","16-01-23_1","16-01-24","16-01-24_0","16-01-24_1","16-01-24_2"],["16-01-50","16-01-51","16-01-51_0","16-01-51_1","16-01-52","16-01-52_0","16-01-52_1","16-01-52_2","16-01-53"],["16-02-17","16-02-17_0","16-02-17_1","16-02-18","16-02-18_0","16-02-18_1","16-02-18_2","16-02-19","16-02-19_0"],["16-02-52","16-02-52_0","16-02-53","16-02-53_0","16-02-53_1","16-02-53_2","16-02-54","16-02-54_0","16-02-54_1"],["16-03-25","16-03-26","16-03-26_0","16-03-26_1","16-03-26_2","16-03-27","16-03-27_0","16-03-27_1","16-03-28"],["16-04-48","16-04-48_0","16-04-48_1","16-04-49","16-04-49_0","16-04-49_1","16-04-50","16-04-50_0","16-04-50_1","16-04-50_2"],["16-05-25","16-05-26","16-05-26_0","16-05-26_1","16-05-27","16-05-27_0","16-05-27_1","16-05-27_2"],["16-06-38","16-06-39","16-06-39_0","16-06-39_1","16-06-39_2","16-06-40","16-06-40_0","16-06-40_1","16-06-41"],["16-07-18","16-07-18_0","16-07-19","16-07-19_0","16-07-19_1","16-07-19_2","16-07-20","16-07-20_0","16-07-20_1"],["16-07-49","16-07-49_0","16-07-49_1","16-07-50","16-07-50_0","16-07-50_1","16-07-50_2","16-07-51"],["16-08-14","16-08-15","16-08-15_0","16-08-16","16-08-16_0","16-08-16_1","16-08-16_2","16-08-17","16-08-17_0"],["16-08-36","16-08-37","16-08-37_0","16-08-37_1","16-08-38","16-08-38_0","16-08-38_1","16-08-38_2","16-08-39"],["16-09-38","16-09-39","16-09-39_0","16-09-39_1","16-09-40","16-09-40_0","16-09-40_1","16-09-40_2","16-09-41","16-09-41_0"],["16-10-20","16-10-20_0","16-10-20_1","16-10-21","16-10-21_0","16-10-21_1","16-10-22","16-10-22_0","16-10-22_1"],["16-10-41","16-10-41_0","16-10-41_1","16-10-42","16-10-42_0","16-10-42_1","16-10-42_2","16-10-43","16-10-43_0"]];
+function findIndex(title)
+{
+var string = title.replace(".csv","");
+string = string.replace("Record_2021-12-06_","");
+//console.log("bruh");
+//console.log(string);
+for(var i=0;i<indexList.length;i++)
+{
+	for(var j=0;j<indexList[i].length;j++)
+	{
+		console.log(indexList[i][j] + " " + string)
+		if(string == indexList[i][j])
+		{
+		console.log("found: " + String(i));
+		return i;
+		}
+	
+	
+	}
+
+}
+
+
+
+
+}
+</script>
+
+
+</html>

@@ -14,7 +14,7 @@ var textParser = {
 	handleText: function(input) {
 		this.displayText(">" + input);
 		
-		var subText = input.split(" ");
+		var subText = input.toLowerCase().split(" ");
 		var action = this.actionTranslator(subText[0]);
 		
 		var accusatief = new word();

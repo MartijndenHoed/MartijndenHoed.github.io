@@ -73,8 +73,14 @@ var textParser = {
 				
 			}
 		
-		
+			if(preposPos-1-partikelLength!=0)
+			{
 			accusatief.noun = this.wordTranslator(subText[preposPos-1-partikelLength]);
+			}
+			else
+			{
+				accusatief.noun = false;
+			}
 			//accusatief.noun = this.wordTranslator(subText[preposPos-1-partikelLength]);
 			for(var i=wordCounter;i<preposPos-1-partikelLength;i++)
 			{
@@ -154,7 +160,7 @@ var textParser = {
 		if(action=="steek") return ["aan"];
 		if(action=="gooi") return ["weg"];
 		if(action=="schakel") return ["uit","aan"];
-		
+		if(action=="ga") return ["in"];
 		
 		return false;
 	},
@@ -270,16 +276,8 @@ var actions = {
 				
 				if(accusatief.noun=="inventory")
 				{
+					player.inventory.check();
 					
-					var items = Array();
-					
-					for(var i=0;i<player.inventory.items.length;i++)
-					{
-						items.push(player.inventory.items[i].names[2]);
-					}
-					var itemList = textParser.listItems(items);
-					if(itemList) textParser.displayText("In je rugzak heb je " + itemList,true);
-					else textParser.displayText("Je hebt niks, jij pauperjoch",true);
 					break;
 				}
 				
@@ -326,23 +324,60 @@ var actions = {
 			break;
 			
 			case "ga":
-			
-				if(player.searchRoomById(player.room.connections[accusatief.noun]))
+				if(accusatief.mode=="in")
 				{
-					player.searchRoomById(player.room.connections[accusatief.noun]).load();
+					if(accusatief.noun==false)
+					{
+						textParser.displayText("Dat zei je moeder gister ook XD XD XD",1);
+					}
+					else
+					{
+						if(player.room.hasOwnProperty("door")&&(player.room.door.names.indexOf(accusatief.noun)!=-1))
+						{
+							player.openDoor(accusatief.noun);
+							break;
+						}
+						if(player.searchRoomById(player.room.connections[accusatief.noun]))
+						{
+							player.searchRoomById(player.room.connections[accusatief.noun]).load();
+						}
+						else
+						{
+							textParser.displayText("Hoeveel vastberadenheid je ook hebt, daar kan je niet in",true);
+						}
+					}
 				}
-				else
+				if(!accusatief.mode)
 				{
-					textParser.displayText("Hoeveel vastberadenheid je ook hebt, daar kan je niet heen",true);
+					if(accusatief.noun==false)
+					{
+						textParser.displayText("Waar wil je heen?",1);
+					}
+					if(accusatief.noun=="binnen")
+					{
+						if(player.room.hasOwnProperty("door")&&!player.room.connections.hasOwnProperty("binnen"))
+						{
+							player.openDoor(player.room.door.names[0]);
+							break;
+						}
+				
+					}
+					if(player.searchRoomById(player.room.connections[accusatief.noun]))
+					{
+						player.searchRoomById(player.room.connections[accusatief.noun]).load();
+					}
+					else
+					{
+						textParser.displayText("Hoeveel vastberadenheid je ook hebt, daar kan je niet heen",true);
+					}
 				}
-			
 			
 			
 			break;
 			
 			case "help":
 			
-				textParser.displayText("Toegestaane acties zijn: kijk, bekijk, lees, pak, ga, steek aan, help. Combineer deze werkwoorden met andere woorden om acties te vormen, voorbeelden: 'kijk rond', 'bekijk [object]', 'pak [object] op' enz");
+				textParser.displayText("Toegestaane acties zijn: kijk, bekijk, lees, pak, ga, steek aan, open, help. Combineer deze werkwoorden met andere woorden om acties te vormen, voorbeelden: 'kijk rond', 'bekijk [object]', 'pak [object] op' enz");
 			
 			
 			break;
@@ -413,10 +448,72 @@ var actions = {
 			
 			break;
 			
+			case "open":
+				if(accusatief.noun == "inventory")
+				{
+					player.inventory.check();
+					break;
+				}
+				if(accusatief.noun)
+				{
+					if(datief.noun)
+					{
+						if(datief.prefixCode==3) var reach =1;
+						else var reach=2;
+
+						var item2 = player.itemSelector(datief,reach);
+						if(item2)
+						{
+							player.openDoor(accusatief.noun,item2);
+							
+							
+						}
+						else
+						{
+							textParser.displayText("Je hebt toch helemaal geen " + datief.noun + ".",1);
+							
+						}
+						
+						
+					}
+					else{
+						
+						player.openDoor(accusatief.noun);
+						
+					}
+				}
+			
+				else {
+					
+					textParser.displayText("Wat wil je nou weer openen jij slijkbrein.",1);
+				}
+			
+			
+			break;
+			
+			case "praat":
+				if(!datief.noun)
+				{
+					if(accusatief.noun) textParser.displayText("Dat moment dat zelfs dit programma nog kan herkennen dat je grammatica shit is. Praat Nederlands.",1);
+					else textParser.displayText("Met wie denk je te willen praten?",1);
+					break;
+				}
+			
+				var actor = player.actorSelector(datief.noun);
+				if(actor)
+				{
+				actor.talk();
+				}
+				else
+				{
+					textParser.displayText("Je ziet geen " + datief.noun + " om je heen, ben je misschien schizofreen?",1);
+				}
+			break;
+			
 			default:
 			
 			
-				textParser.displayText(action + " staat niet in mijn woordenboek",true);
+				textParser.displayText(action + " staat niet in mijn woordenboek.",true);
 			break;
 		
 		}
@@ -454,8 +551,21 @@ var player = {
 			}
 			
 			return false
+		},
+		check: function() {
+			var items = Array();
+					
+			for(var i=0;i<player.inventory.items.length;i++)
+			{
+				items.push(player.inventory.items[i].names[2]);
+			}
+			var itemList = textParser.listItems(items);
+			if(itemList) textParser.displayText("In je rugzak heb je " + itemList,true);
+			else textParser.displayText("Je hebt niks, jij pauperjoch",true);
+	
+			
+			
 		}
-		
 		
 		
 	},
@@ -504,6 +614,20 @@ var player = {
 		
 		return false;
 	},
+	actorSelector: function(name)
+	{
+		if(!player.room.hasOwnProperty("actors")) return false;
+		for(var i=0;i<player.room.actors.length;i++)
+		{
+			if(player.room.actors[i].names.indexOf(name))
+			{
+				return player.room.actors[i];
+			}
+			
+		}
+		
+		return false;
+	},
 	
 	itemMatch: function(a,b)
 	{
@@ -519,6 +643,65 @@ var player = {
 		
 		
 		return false
+	},
+	checkDoor: function(name)
+	{
+		if(!player.room.hasOwnProperty("door")) return false
+		for(var i=0;i<player.room.door.names.length;i++)
+		{
+			if(name==player.room.door.names[i])
+			{
+				return true
+			}
+		}
+		return false
+	},
+	openDoor: function(doorName,item)
+	{
+		if(this.checkDoor(doorName))
+		{
+			var door = player.room.door;
+			if(!item)
+			{
+				if(door.locked)
+				{
+					textParser.displayText(door.lockedMessage,1);
+				}
+				else
+				{
+					player.searchRoomById(door.connection).load();
+				}
+			}
+			else
+			{
+				if(door.locked)
+				{
+					if(door.keys.indexOf(item.names[0])!=-1)
+					{
+						door.locked = false;
+						player.inventory.items.splice(player.inventory.items.indexOf(item));
+						player.searchRoomById(door.connection).load();
+					}
+					else
+					{
+						
+						textParser.displayText(item.names[1] + " heeft geen enkel effect.",1);
+					}
+				}
+				else {
+					
+					player.searchRoomById(door.connection).load();
+				}
+				
+				
+				
+			}
+		}
+		else
+		{
+			textParser.displayText("Je ziet niets dat daarop lijkt.",1);
+		}
+		
 	},
 	
 	room:0,

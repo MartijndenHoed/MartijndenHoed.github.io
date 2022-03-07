@@ -39,7 +39,27 @@ var world = {rooms:
 		intro:"Je staat nu voor een groot kasteel, in het zuiden is het veld.",
 		description: "Je beseft dat dit kasteel natuurlijk het keukenhof kasteel is. De grote deur is gesloten en als je hem probeert te openen hoor je iemand binnen 'nai nai, ze komen er niet in' roepen.",
 		items:[],
+		actors: [NielsOpdam],
 		connections:{south:"hub",veld:"hub"},
+		door:{
+			names: ["deur","kasteel","poort","binnen"],
+			locked: true,
+			lockedMessage: "Je krijgt de deur voor geen meter open.",
+			keys: ["paasticket"],
+			connection: "hal"
+		},
+		load: function(direction) {
+			player.room = this;
+			textParser.displayText(this.intro,true);
+		}
+	},
+	{
+		ID: "hal",
+		intro:"Je staat nu in de grote toegangshal van het kasteel. Voor je is het atrium en achter je is de buitenwereld",
+		description: "bruh",
+		items:[],
+		actors: [NielsOpdam],
+		connections:{buiten:"kasteel",atrium:"atrium"},
 		load: function(direction) {
 			player.room = this;
 			textParser.displayText(this.intro,true);

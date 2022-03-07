@@ -37,15 +37,15 @@ var world = {rooms:
 	{
 		ID: "kasteel",
 		intro:"Je staat nu voor een groot kasteel, in het zuiden is het veld.",
-		description: "Je beseft dat dit kasteel natuurlijk het keukenhof kasteel is. De grote deur is gesloten en als je hem probeert te openen hoor je iemand binnen 'nai nai, ze komen er niet in' roepen.",
+		description: "Je beseft dat dit kasteel natuurlijk het keukenhof kasteel is. De grote deur is gesloten en het lijkt alsof je Niels binnen hoort.",
 		items:[],
 		actors: [NielsOpdam],
 		connections:{south:"hub",veld:"hub"},
 		door:{
 			names: ["deur","kasteel","poort","binnen"],
 			locked: true,
-			lockedMessage: "Je krijgt de deur voor geen meter open.",
-			keys: ["paasticket"],
+			lockedMessage: "Je probeert de deur te openen, maar het voelt alsof hij vanbinnen wordt dichtgeduwd.",
+			keys: [],
 			connection: "hal"
 		},
 		load: function(direction) {
@@ -57,9 +57,27 @@ var world = {rooms:
 		ID: "hal",
 		intro:"Je staat nu in de grote toegangshal van het kasteel. Voor je is het atrium en achter je is de buitenwereld",
 		description: "bruh",
-		items:[],
+		items:[tapijt],
 		actors: [NielsOpdam],
+		door:{
+			names: ["luik","valluik","omlaag"],
+			locked: false,
+			lockedMessage: "Je krijgt de deur voor geen meter open.",
+			keys: [],
+			connection: "kelder"
+		},
 		connections:{buiten:"kasteel",atrium:"atrium"},
+		load: function(direction) {
+			player.room = this;
+			textParser.displayText(this.intro,true);
+		}
+	},
+	{
+		ID: "kelder",
+		intro:"Kelderintro",
+		description: "Kelderbeschrijving",
+		items:[],
+		connections:{omhoog:"hal",boven:"hal"},
 		load: function(direction) {
 			player.room = this;
 			textParser.displayText(this.intro,true);

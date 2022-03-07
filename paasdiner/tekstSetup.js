@@ -170,6 +170,8 @@ var textParser = {
 		if(prepos=="voor") return 3;
 		if(prepos=="tegen") return 4;
 		if(prepos=="aan") return 5;
+		if(prepos=="onder") return 6;
+		if(prepos=="in") return 7;
 		return 0;
 	},
 	
@@ -255,13 +257,13 @@ var actions = {
 			break;
 			
 			case "kijk":
-				if(accusatief.noun=="rond" || !accusatief.noun)
+				if(accusatief.noun=="rond" || (!accusatief.noun&&!datief.noun))
 				{
 					var description = player.room.description;
 					var items = Array();
 					for(var i=0;i<player.room.items.length;i++)
 					{
-						if(!player.room.items[i].isTaken)
+						if(!player.room.items[i].isTaken && !player.room.items[i].undiscoverable)
 						{
 							items.push(player.room.items[i].names[2]);
 							player.room.items[i].discovered = true;
@@ -272,6 +274,32 @@ var actions = {
 					if(itemList) description +=" Voor de rest zie je " +  itemList + ".";
 					textParser.displayText(description,true);
 					break;
+				}
+				if(datief.noun)
+				{
+					if(datief.prefixCode==3) var reach =1;
+					else var reach=2;
+
+					var item2 = player.itemSelector(datief,reach);
+					if(item2)
+					{
+						if(item2.hasOwnProperty("spatialDescriptions") && item2.spatialDescriptions.hasOwnProperty(datief.prepos))
+						{
+							textParser.displayText(item2.spatialDescriptions[datief.prepos],1);
+							break;
+						}
+						else
+						{
+							textParser.displayText("Dat gaat je niet lukken m'n jongen.",1);
+							break;
+						}
+					}
+					else
+					{
+						textParser.displayText("Je ziet niets dat daarop lijkt.",1);
+						break;
+					}
+					
 				}
 				
 				if(accusatief.noun=="inventory")
@@ -292,6 +320,19 @@ var actions = {
 					textParser.displayText(description,true);
 					break;
 				}
+				if(player.actorSelector(accusatief.noun))
+				{
+					var actor = player.actorSelector(accusatief.noun);
+					if(actor.visible)
+					{
+						textParser.displayText(actor.description);
+					}
+					else
+					{
+						 textParser.displayText("Je kan " + actor.names[0] + " niet zien.",true);
+					}
+					break;
+				}
 				if(reach==1) textParser.displayText("Je hebt niets dat daarop lijkt",true);
 				if(reach==2) textParser.displayText("Je ziet niets dat daarop lijkt",true);
 			
@@ -308,6 +349,7 @@ var actions = {
 						player.inventory.add(item);
 						textParser.displayText("Met veel moeite strek je je uit en pak je " +item.names[1],true);
 						item.isTaken=true;
+						player.room.items.splice(player.room.items.indexOf(item),1);
 					}
 					else{
 						textParser.displayText("Wat denk je te pakken?",true);
@@ -377,7 +419,7 @@ var actions = {
 			
 			case "help":
 			
-				textParser.displayText("Toegestaane acties zijn: kijk, bekijk, lees, pak, ga, steek aan, open, help. Combineer deze werkwoorden met andere woorden om acties te vormen, voorbeelden: 'kijk rond', 'bekijk [object]', 'pak [object] op' enz");
+				textParser.displayText("Toegestaane acties zijn: kijk, bekijk, lees, pak, ga, steek aan, open, praat, help. Combineer deze werkwoorden met andere woorden om acties te vormen, voorbeelden: 'kijk rond', 'bekijk [object]', 'pak [object] op' enz");
 			
 			
 			break;
@@ -503,6 +545,29 @@ var actions = {
 				if(actor)
 				{
 				actor.talk();
+				}
+				else
+				{
+					textParser.displayText("Je ziet geen " + datief.noun + " om je heen, ben je misschien schizofreen?",1);
+				}
+			break;
+			
+			case "geef":
+				if(!datief.noun)
+				{
+					if(accusatief.noun) textParser.displayText("Aan wie denk je dit te willen geven?",1);
+					else textParser.displayText("Wie wil je wat geven?",1);
+					break;
+				}
+				if(!item)
+				{
+					textParser.displayText("Je moet wel iets hebben wat je wilt geven",1);
+					break;
+				}
+				var actor = player.actorSelector(datief.noun);
+				if(actor)
+				{
+				actor.giveItem(item);
 				}
 				else
 				{
@@ -679,7 +744,7 @@ var player = {
 					if(door.keys.indexOf(item.names[0])!=-1)
 					{
 						door.locked = false;
-						player.inventory.items.splice(player.inventory.items.indexOf(item));
+						player.inventory.items.splice(player.inventory.items.indexOf(item),1);
 						player.searchRoomById(door.connection).load();
 					}
 					else

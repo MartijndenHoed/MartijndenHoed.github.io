@@ -52,7 +52,7 @@ var moker = {
 }
 
 var bierfles = {
-	names: ["bierflesje", "het bierflesje", "een bierflesje"],
+	names: ["bierflesje", "het bierflesje", "een bierflesje","flesje","bier"],
 	adjectives: [],
 	description: "Een half opgedranken bierflesje met een rietje van Gijs erin",
 	additions: []
@@ -72,7 +72,7 @@ var jonko = {
 	
 }
 var paasticket = {
-	names: ["paasticket", "de paasticket", "een paasticket"],
+	names: ["paasticket", "de paasticket", "een paasticket","ticket"],
 	adjectives: [],
 	description: "<img src='paasticket.png' width='300px'  height='auto' > </img>",
 	additions: [],
@@ -80,5 +80,15 @@ var paasticket = {
 	lit:false
 	
 	
+}
+
+var tapijt = {
+	names: ["tapijt", "het tapijt", "een tapijt"],
+	adjectives: ["groot"],
+	description: "Een prachtig karmijnrood tapijt dat erg duur lijkt. Tenminste dat was het want nu zit het onder de biervlekken",
+	additions: [],
+	spatialDescriptions: {onder:"Onder het tapijt zie je een groot luik, gelukkig zit er geen slot op."},
+	undiscoverable:true,
+	discovered: true
 }
 

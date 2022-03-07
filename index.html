@@ -1,10 +1,13 @@
 <html>
+<title>Paasdiner simulator</title>
 
-<body>
-This is the place for my webtools <br>
-	<a href="https://martijndenhoed.github.io/graphingTool.html" class="button"> graph to polynomial tool </a> <br>
-	<a href="https://martijndenhoed.github.io/csvImager.html" class="button"> csv to thermal image </a> <br>
-	<a href="https://martijndenhoed.github.io/airfoilTrimmer.html" class="button"> csv to trimmed thermal image </a>
-</body>
+<div id="output"> </div>
+<input type='text' id="input" onkeydown = "if (event.keyCode == 13)
+                        inputHandler()"   > </input>
 
+<script src='tekstSetup.js'> </script>
+<script src='tekstItems.js'> </script>
+<script src='tekstActors.js'> </script>
+<script src='tekstRooms.js'> </script>
+<script src='tekstScript.js'> </script>
 </html>

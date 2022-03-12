@@ -28,7 +28,8 @@ var aansteker = {
 	description:"Een klassieke plastic aansteker van de kermis met foppes naam erin gekrast. Het lijkt erop dat hij hier veel jonko mee heeft geklapt.",
 	additions: [],
 	weapon:true,
-	lit:true
+	lit:true,
+	discovered: true,
 };
 
 var steen = {
@@ -82,6 +83,16 @@ var paasticket = {
 	
 }
 
+var chips = {
+	names: ["doritos", "de doritos", "een zak doritos","chips"],
+	adjectives: ["zak"],
+	description: "Een halflege zak sweet chili doritos. Helaas is het niet flamin' hot.",
+	additions: [],
+	roomDescription: "De grond is bezaait met halflege zakken chips.",
+	spatialDescriptions: {in:"Er zitten doritos in...... Wat had je verwacht?"},
+	discovered: true,
+}
+
 var tapijt = {
 	names: ["tapijt", "het tapijt", "een tapijt"],
 	adjectives: ["groot"],
@@ -91,4 +102,32 @@ var tapijt = {
 	undiscoverable:true,
 	discovered: true
 }
+
+var fakkel = {
+	names: ["fakkel", "de fakkel", "een fakkel"],
+	adjectives:[],
+	description: "",
+	additions:[],
+	burnable:true,
+	lit:false,
+	illuminating:false,
+	roomDescription: "De muur is ook nog versierd met oude fakkels, bijna als in Minecraft.",
+	activeDescription: function() {
+		if(!this.lit)
+		{
+			return "Een oude, gedoofde fakkel. De top is gedrenkt in teer dus misschien valt die nog aan te steken. Het doet je denken aan een hele grote jonko.";
+			
+		}
+		else
+		{
+			
+			return "Een oude fakkel. Hij brandt zacht en geeft een miniale hoeveelheid licht."
+		}
+	},
+		
+		
+}
+
+	
+	
 

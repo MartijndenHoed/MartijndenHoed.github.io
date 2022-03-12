@@ -259,20 +259,30 @@ var actions = {
 			case "kijk":
 				if(accusatief.noun=="rond" || (!accusatief.noun&&!datief.noun))
 				{
-					var description = player.room.description;
-					var items = Array();
-					for(var i=0;i<player.room.items.length;i++)
+					if(!player.room.isDark)
 					{
-						if(!player.room.items[i].isTaken && !player.room.items[i].undiscoverable)
+						player.lookAround();
+					}
+					else
+					{
+						var isIlluminated = false;
+						for(var i=0;i<player.inventory.items.length;i++)
 						{
-							items.push(player.room.items[i].names[2]);
-							player.room.items[i].discovered = true;
+							player.inventory.items[i].illuminating;
+							if(player.inventory.items[i].illuminating)
+							{
+								
+								
+								var string = player.inventory.items[i].names[1] + " geeft genoeg licht om rond te kunnen kijken. ";
+								player.lookAround(string);
+								isIlluminated = true;
+								break;
+							}
+							
 						}
+						if(!isIlluminated) textParser.displayText("Het is te donker, je ziet echt geen moker.",true);
 						
 					}
-					var itemList = textParser.listItems(items);
-					if(itemList) description +=" Voor de rest zie je " +  itemList + ".";
-					textParser.displayText(description,true);
 					break;
 				}
 				if(datief.noun)
@@ -312,20 +322,28 @@ var actions = {
 				if(item && item.discovered)
 				{
 					//console.log(item);
-					var description = item.description;
-					for(var i=0;i<item.additions.length;i++)
+					if(!item.hasOwnProperty("activeDescription"))
 					{
-					description += ", " + item.additions[i];
+						var description = item.description;
+						for(var i=0;i<item.additions.length;i++)
+						{
+						description += ", " + item.additions[i];
+						}
+						textParser.displayText(description,true);
+						break;
 					}
-					textParser.displayText(description,true);
-					break;
+					else
+					{
+						textParser.displayText(item.activeDescription(),true);
+						break;
+					}
 				}
 				if(player.actorSelector(accusatief.noun))
 				{
 					var actor = player.actorSelector(accusatief.noun);
 					if(actor.visible)
 					{
-						textParser.displayText(actor.description);
+						textParser.displayText(actor.description,true);
 					}
 					else
 					{
@@ -455,6 +473,7 @@ var actions = {
 							else {
 								textParser.displayText("Voorzichtig steek je " + item.names[1] + " aan terwijl een stekende pijn zich door je vingertoppen beweegt: je hebt je hand verbrand.",true);
 								item.lit=true;
+								if(item.hasOwnProperty("illuminating")) item.illuminating = true;
 								item.additions.push("langzaam maar warm smeult het.");
 							}
 							
@@ -684,7 +703,7 @@ var player = {
 		if(!player.room.hasOwnProperty("actors")) return false;
 		for(var i=0;i<player.room.actors.length;i++)
 		{
-			if(player.room.actors[i].names.indexOf(name))
+			if(player.room.actors[i].names.indexOf(name)!=-1)
 			{
 				return player.room.actors[i];
 			}
@@ -768,7 +787,34 @@ var player = {
 		}
 		
 	},
-	
+	lookAround: function(string="") {
+		var description = string + this.room.description;
+		var items = Array();
+		for(var i=0;i<this.room.items.length;i++)
+		{
+			if(!this.room.items[i].isTaken && !this.room.items[i].undiscoverable)
+			{
+				if(this.room.items[i].hasOwnProperty("roomDescription")) 
+				{
+					console.log(this.room.items[i]);
+					description += " " + this.room.items[i].roomDescription + " ";
+					
+				}
+				else 
+				{
+					items.push(this.room.items[i].names[2]);
+				}
+				this.room.items[i].discovered = true;
+			}
+
+		}
+		console.log(description);
+		var itemList = textParser.listItems(items);
+		if(itemList) description +=" Voor de rest zie je " +  itemList + ".";
+		textParser.displayText(description,true);
+		
+		
+	},
 	room:0,
 	recentWeapon:false
 }

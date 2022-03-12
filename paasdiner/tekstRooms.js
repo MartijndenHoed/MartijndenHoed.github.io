@@ -115,6 +115,7 @@ var world = {rooms:
 		description: "Als je goed rondkijkt zie je aan de overkant van de vijver Marco voorovergebogen in het water barfen. Hij mompelt iets over grappig zijn voordat hij zijn complete maaginhoud in de vijver mikkert. Hij zal wel geen date hebben gevonden.",
 		items:[paasticket],
 		connections:{east:"hub",veld:"hub"},
+		actors: [Marco],
 		load: function(direction) {
 			player.room = this;
 			textParser.displayText(this.intro,true);

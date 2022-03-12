@@ -82,3 +82,16 @@ var Foppe = {
 	
 	
 }
+
+var Marco = {
+	names: ["Marco","marco","marc"],
+	description: "Marco zit erbij alsof hij zwaar depressief is en veels te veel vodka geshot heeft",
+	visible: true,
+	giveItem: function(item) {
+		textParser.displayText("'GA'",true);
+	},
+	talk: function() {
+		textParser.displayText("'GA'",true);
+		
+	}
+}

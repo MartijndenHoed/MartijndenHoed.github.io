@@ -62,6 +62,24 @@ var bierfles = {
 	
 }
 
+var flesopener = {
+	names: ["flesopener", "de flesopener", "een flesopener","opener"],
+	adjectives: ["gouden"],
+	description: "Een gouden flesopener in de vorm van een ananas. Het is zo onwaarschijnlijk dat dit uit een winkel komt dat het naar verluid door Bas custom is laten maken.",
+	additions: []
+	
+	
+	
+}
+
+var zolderSleutel = {
+	names: ["sleutel","de sleutel","een sleutel"],
+	adjectives:[],
+	description: "Een antieke sleutel. Hij ziet er goudkleurig uit, maar is waarschijnlijk van messing gemaakt.",
+	additions: [],
+	roomDescription:"In de hoek zie je een kleine sleutel liggen."
+}
+
 var jonko = {
 	names: ["jonko", "de jonko", "een jonko"],
 	adjectives: [],
@@ -93,10 +111,27 @@ var chips = {
 	discovered: true,
 }
 
+var verrekijker = {
+	names: ["verrekijker", "de verrekijker", "een verrekijker"],
+	adjectives: [],
+	description: "Lars zijn vertrouwde verrekijker. Het vergroot met een factor 45, wat betekent dat je van zo'n 800 meter afstand door iemands ramen kan kijken.",
+	additions: [],
+	spatialDescriptions: {door:"De verrekijker in combinatie met je kater maakt je plots erg misselijk."},
+	discovered: true,
+}
+
+var neukbril = {
+	names: ["neukbril", "de neukbril", "een bril","bril"],
+	adjectives: [],
+	description: "Lars zijn stijlvolle neukbril. Hiermee heeft hij al vele meiden gebekt... XD natuurlijk niet",
+	additions: [],
+	undiscoverable:true,
+}
+
 var tapijt = {
 	names: ["tapijt", "het tapijt", "een tapijt"],
 	adjectives: ["groot"],
-	description: "Een prachtig karmijnrood tapijt dat erg duur lijkt. Tenminste dat was het want nu zit het onder de biervlekken",
+	description: "Een prachtig karmijnrood tapijt dat erg duur lijkt. Tenminste dat was het want nu zit het onder de biervlekken. Er zit een aparte plooi in.",
 	additions: [],
 	spatialDescriptions: {onder:"Onder het tapijt zie je een groot luik, gelukkig zit er geen slot op."},
 	undiscoverable:true,
@@ -121,7 +156,7 @@ var fakkel = {
 		else
 		{
 			
-			return "Een oude fakkel. Hij brandt zacht en geeft een miniale hoeveelheid licht."
+			return "Een oude fakkel. Hij brandt zacht en geeft een minimale hoeveelheid licht."
 		}
 	},
 		

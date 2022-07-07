@@ -143,6 +143,8 @@ var textParser = {
 		if(word=="zuid"||word=="zuidelijk"||word=="zuidwaarts"||word=="zuiden") return "south"
 		if(word=="west"||word=="westelijk"||word=="westwaarts"||word=="westen") return "west"
 		if(word=="oost"||word=="oostelijk"||word=="oostwaarts"||word=="oosten") return "east"
+		if(word=="rechtsaf") return "rechts"
+		if(word=="linksaf") return "links"
 		if(word=="spullen"||word=="rugzak") return "inventory";
 		
 		return word;
@@ -172,6 +174,7 @@ var textParser = {
 		if(prepos=="aan") return 5;
 		if(prepos=="onder") return 6;
 		if(prepos=="in") return 7;
+		if(prepos=="door") return 8;
 		return 0;
 	},
 	
@@ -257,11 +260,24 @@ var actions = {
 			break;
 			
 			case "kijk":
-				if(accusatief.noun=="rond" || (!accusatief.noun&&!datief.noun))
+				if(accusatief.noun=="rond" || (!accusatief.noun&&datief.preposCode==2))
 				{
+					var item2 = false;
+					if(datief.noun)
+					{
+						if(datief.prefixCode==3) var reach =1;
+						else var reach=2;
+
+						item2 = player.itemSelector(datief,reach);
+						if(item2==false) 
+						{
+							textParser.displayText("Je hebt niets dat daarop lijkt",true);
+							break;
+						}
+					}
 					if(!player.room.isDark)
 					{
-						player.lookAround();
+						player.lookAround("",item2);
 					}
 					else
 					{
@@ -274,7 +290,7 @@ var actions = {
 								
 								
 								var string = player.inventory.items[i].names[1] + " geeft genoeg licht om rond te kunnen kijken. ";
-								player.lookAround(string);
+								player.lookAround(string,item2);
 								isIlluminated = true;
 								break;
 							}
@@ -291,6 +307,7 @@ var actions = {
 					else var reach=2;
 
 					var item2 = player.itemSelector(datief,reach);
+					//console.log(item2);
 					if(item2)
 					{
 						if(item2.hasOwnProperty("spatialDescriptions") && item2.spatialDescriptions.hasOwnProperty(datief.prepos))
@@ -370,12 +387,12 @@ var actions = {
 						player.room.items.splice(player.room.items.indexOf(item),1);
 					}
 					else{
-						textParser.displayText("Wat denk je te pakken?",true);
+						textParser.displayText("Euhh ja dat is er niet",true);
 					}
 				}
 				else
 				{
-					textParser.displayText("Wat denk je te pakken?",true);
+					textParser.displayText("Euhh ja dat is er niet",true);
 					
 					
 				}
@@ -399,7 +416,7 @@ var actions = {
 						}
 						if(player.searchRoomById(player.room.connections[accusatief.noun]))
 						{
-							player.searchRoomById(player.room.connections[accusatief.noun]).load();
+							player.searchRoomById(player.room.connections[accusatief.noun]).load(accusatief.noun);
 						}
 						else
 						{
@@ -411,7 +428,8 @@ var actions = {
 				{
 					if(accusatief.noun==false)
 					{
-						textParser.displayText("Waar wil je heen?",1);
+						textParser.displayText("Euhh wat bedoel je?",1);
+						break;
 					}
 					if(accusatief.noun=="binnen")
 					{
@@ -422,9 +440,14 @@ var actions = {
 						}
 				
 					}
-					if(player.searchRoomById(player.room.connections[accusatief.noun]))
+					if(player.room.hasOwnProperty("door") && player.room.door.names.indexOf(accusatief.noun)!=-1)
 					{
-						player.searchRoomById(player.room.connections[accusatief.noun]).load();
+						player.openDoor(player.room.door.names[0]);
+						break;
+					}
+					else if(player.searchRoomById(player.room.connections[accusatief.noun]))
+					{
+						player.searchRoomById(player.room.connections[accusatief.noun]).load(accusatief.noun);
 					}
 					else
 					{
@@ -437,7 +460,7 @@ var actions = {
 			
 			case "help":
 			
-				textParser.displayText("Toegestaane acties zijn: kijk, bekijk, lees, pak, ga, steek aan, open, praat, help. Combineer deze werkwoorden met andere woorden om acties te vormen, voorbeelden: 'kijk rond', 'bekijk [object]', 'pak [object] op' enz");
+				textParser.displayText("Toegestaane acties zijn: kijk, bekijk, lees, pak, ga, steek aan, open, praat, geef, help. Combineer deze werkwoorden met andere woorden om acties te vormen, voorbeelden: 'kijk rond', 'bekijk [object]', 'pak [object] op' enz");
 			
 			
 			break;
@@ -493,13 +516,19 @@ var actions = {
 				}
 				else
 				{
-					if(!item || !item.discovered)
+					if(player.actorSelector(accusatief.noun))
 					{
-						textParser.displayText("Wat wil je nou weer steken?",1);
-					}
-					else{
+						textParser.displayText("Het is niet zo netjes om " + accusatief.noun +" te steken.",1);
 						
-						textParser.displayText("Het is niet zo netjes om " + item.names[2] +" te steken.",1);
+					}
+					else if(!item || !item.discovered)
+					{
+						textParser.displayText("Ga niet steken gast",1);
+					}
+
+					else {
+						
+						textParser.displayText("Het is niet zo makkelijk om " + item.names[2] +" te steken.",1);
 					}
 					
 					
@@ -787,8 +816,31 @@ var player = {
 		}
 		
 	},
-	lookAround: function(string="") {
-		var description = string + this.room.description;
+	lookAround: function(string="",item=false) {
+		if(!player.hasLooked||item!=false)
+		{
+			if(this.room.hasOwnProperty("activeDescription")&& item!=false)
+			{
+				var description = string + this.room.activeDescription(item);
+			}
+			else
+			{
+				//console.log(item);
+				if(item!=false)
+				{
+					textParser.displayText("Euhhhhh ja ik heb echt geen idee hoe je " + item.names[2] + " hier wilt gebruiken.",true);
+					return
+				}
+				var description = string + this.room.description;
+			}
+			player.hasLooked = true;
+		}
+		else
+		{
+			var description = string + this.room.intro;
+			player.hasLooked = false;
+		}
+		//console.log(player.hasLooked);
 		var items = Array();
 		for(var i=0;i<this.room.items.length;i++)
 		{
@@ -816,6 +868,7 @@ var player = {
 		
 	},
 	room:0,
+	hasLooked: false,
 	recentWeapon:false
 }
 

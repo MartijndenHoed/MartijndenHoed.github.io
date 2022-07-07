@@ -27,7 +27,7 @@ var NielsOpdam = {
 	talk: function() {
 		if((player.room.door && !player.room.door.locked)||!player.room.door)
 		{
-		textParser.displayText("Pas op dat je niet uitglijdt in de zaal van het kasteel m'n rakker.",1);
+		textParser.displayText("Pas op dat je niet struikelt in de zaal van het kasteel m'n rakker.",1);
 		}
 		else if(player.room.door.locked)
 		{
@@ -37,7 +37,7 @@ var NielsOpdam = {
 }
 
 var Jeffrey = {
-	names: ["Jeffrey","jeff","jeffrey"],
+	names: ["Jeffrey","jeff","jeffrey","jef"],
 	description: ["Weet je nog die ene keer dat Jeffrey meer dan een halve brownie op had? Dat is hij er nu uitziet."],
 	visible: true,
 	giveItem: function(item) {
@@ -94,4 +94,63 @@ var Marco = {
 		textParser.displayText("'GA'",true);
 		
 	}
+}
+
+var Lars = {
+	names: ["Lars","lars"],
+	description: "Lars hangt over de wc-pot en zit in het pijnlijke proces van barfen met een lege maag. Iets is anders aan zijn gezicht vandaag.... Oh wacht hij draagt gewoon geen bril.",
+	visible: true,
+	giveItem: function(item) {
+		if(item.names[0]=="neukbril")
+		{
+		textParser.displayText("'Snel haal de meiden want nu ben ik onweerstaanbaar. Deze heb ik nu ook niet meer nodig' zegt Lars terwijl hij je zijn verrekijker geeft.",true);
+		player.inventory.add(verrekijker);
+		}
+		else{
+			textParser.displayText("'Ja ik zie echt voor geen meter wat dat is'",true);
+		}
+	},
+	talk: function() {
+		larsEvent();
+		
+	}
+}
+
+var Gijs = {
+	names: ["Gijs","gijs"],
+	description: "Gijs zit halfdood in de hoek van de kamer. Hij zei dat die deze week al drie keer had gezopen bij lustrumfeesten van Forestus dus het is niet gek daat hij er beroerd uitziet.",
+	visible: true,
+	giveItem: function(item) {
+		textParser.displayText("'Nee dankje, ik ben al genoeg kwijt geraakt vanavond. Toen we met een groep naar het bos gingen was ik ze na twee afslagen naar links al kwijt, samen met lars zijn bril. Daarna ben ik maar terug gegaan om verder te drinken.'",true);
+	},
+	talk: function() {
+		textParser.displayText("'Gelukkig was mijn antibioticakuur voor mijn driedubbele longontsteking net afgelopen, anders had ik niet mogen zuipen. Of het verstandig was om te gaan zuipen? Natuurlijk! Ik had zoveel hype...'",true);
+		
+	}
+}
+function larsEvent()
+{
+	string = `Een man fietst over een landweggetje en ziet opeens een kip met drie poten voorbij rennen. Hij stapt af en probeert de kip te pakken, maar steeds als hij in de buurt komt zet de kip het op een rennen. De man volgt de kip en komt bij een boerderij uit. Daar ziet hij een boer staan. Hij vraagt hem: "Is die kip van u?" "Ja," antwoordt de boer. De man zegt: "Weet u dat het dier drie poten heeft?" "Ja, dat klopt," antwoordt de boer weer, "en dat komt zo: ik woon hier met mijn vrouw en zoon, en steeds als we kip aten hadden we ruzie over wie de pootjes mocht opeten. Na lang onderzoek is het ons gelukt een kip met drie poten te fokken". De man vraagt: "En is het nou over met die ruzies?" De boer antwoordt: "Dat weet ik niet, want het is ons nog steeds niet gelukt het beest te vangen."`
+	string = string.replaceAll(`"`,"")
+	string = string.replaceAll(`?`,"?.")
+	string = string.replaceAll(`:`,":.")
+	larsText = string.split(".");
+	//console.log(larsText[0]);
+	textParser.displayText("Lars probeert zijn kots in te houden en begint te praten: <br> <'Heb je deze al gehoord?'",true);
+	var inputField = document.getElementById("input");
+	inputField.disabled = true;
+	for(var i=0;i<larsText.length-1;i++)
+	{
+	setTimeout(function() {textParser.displayText("'" + larsText[i] + "'",true); i+=1;},(i+1)*4000);
+	}
+	setTimeout(function() {textParser.displayText("'hue hue hue'",true)
+	inputField.disabled = false;
+	},(i+2)*4000)
+	i=0;
+	
+	
+	
+	
+	
+	
 }

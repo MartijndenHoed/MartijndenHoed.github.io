@@ -1,0 +1,316 @@
+<html>
+
+<style>
+@font-face {
+  font-family: myFirstFont;
+  src: url(04B_30__.ttf);
+}
+
+body {
+  background-color: #FFC300;
+  font-family: myFirstFont;
+}
+
+
+.playerselector {
+  margin: auto;
+  width: 50%;
+  border: 3px solid green;
+  border-radius: 12px;
+  padding: 10px;
+}
+
+.main {
+  margin: auto;
+  width: 50%;
+  border: 3px solid green;
+  border-radius: 12px;
+  padding: 10px;
+}
+
+input[type=text] {
+	appearance: none;
+	border: none;
+	outline: none;
+	border-bottom: .2em solid #E91E63;
+	background: rgba(#E91E63, .2);
+	border-radius: .2em .2em 0 0;
+	padding: .4em;
+	color: #E91E63;
+}
+
+button {
+font-family: myFirstFont;
+  appearance: button;
+  backface-visibility: hidden;
+  background-color: #405cf5;
+  border-radius: 6px;
+  border-width: 0;
+  box-shadow: rgba(50, 50, 93, .1) 0 0 0 1px inset,rgba(50, 50, 93, .1) 0 2px 5px 0,rgba(0, 0, 0, .07) 0 1px 1px 0;
+  box-sizing: border-box;
+  color: #fff;
+  cursor: pointer;
+  font-size: 100%;
+  height: 44px;
+  line-height: 1.15;
+  margin: 12px 0 0;
+}
+
+
+</style>
+
+<head>
+	<title> Pikkolo </title>
+	<link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+
+<body>
+
+<button onclick="menu(this)" id="menu" style="display:none"> voeg spelers toe </button>
+
+
+
+<br> <br>
+
+
+<div id="playerselector" class="playerselector">
+<h1>  PIKKOLO </h1> 
+<button onclick="startGame(this)"> start spel </button>
+<h2>  RONDES </h2> 
+<input type="text" placeholder="20" value='20' id='maxRounds'>   </input>
+<h2>  VOEG SPELERS TOE </h2> 
+	<div id="playerList">
+		<div>
+			<input type="text" placeholder="enter name">   </input> <button onclick=	"removePlayer(this)"> verwijder speler </button>
+		
+		</div>
+	</div>
+	<button onclick="addPlayer(this)"> voeg speler toe </button>
+</div>
+
+<div id="main" class="main" style='display:none'>
+<h1>  Piccolo </h1> 
+
+</div>
+
+</body>
+
+<script src='game.js'>
+
+
+</script>
+<script>
+round = 0;
+virusQueue = [];
+currentChallenges = [];
+gamePaused = false;
+
+function removePlayer(button)
+{
+parent = button.parentElement;
+button.parentElement.children[0].value = "";
+
+
+console.log(button.parentElement.children[0])
+	if(parent.parentElement.children.length>1)
+	{
+		parent.remove();
+	}
+}
+
+function addPlayer(button)
+{
+parent = button.parentElement;
+//playerListElement = parent.children[1];
+playerListElement = document.getElementById("playerList");
+var newPlayer = document.createElement("div");
+newPlayer.innerHTML += '<input type="text" placeholder="niels zopdam">   </input> <button onclick="removePlayer(this)">  verwijder speler </button>'; 
+
+playerListElement.appendChild(newPlayer);
+}
+
+function startGame(button)
+{
+	playerListElement = document.getElementById("playerList");
+	players = [];
+	for(var x=0;x<playerListElement.children.length;x++)
+	{	
+		if(playerListElement.children[x].children[0].value) players.push({name:playerListElement.children[x].children[0].value});
+		
+	}
+	players = players.filter((name) => name != '')
+	
+	//alert(players)
+	
+	if(players.length < 2)
+	{
+		alert("Yo je kan dit niet spelen in je eentje, ga vrienden zoeken ofzo loner");
+		return;
+	}
+	console.log("starting with " + String(players.length) + " players...");
+	document.getElementById("playerselector").style.display = 'none';
+	document.getElementById("main").style.display = 'block';
+	document.getElementById("menu").style.display = 'block';
+
+	pauseCycle();
+	maxRounds = document.getElementById("maxRounds").value;
+	if(!maxRounds) maxRounds = 20;
+	if(!gamePaused) round = 1;
+}
+
+function gameCycle()
+{
+	element = document.getElementById("main");
+	
+	for(var x=0;x<virusQueue.length;x++)
+	{
+		virusQueue[x].rounds-=1;
+		if(virusQueue[x].rounds==0) 
+		{
+		
+			
+			text = virusQueue[x].endText;
+			text = text.replace("#PLAYER",virusQueue[x].player.name);
+			title = virusQueue[x].title;
+			imgsrc = virusQueue[x].image;
+			
+			element.onclick = function() {gameCycle()};
+			element.innerHTML = `
+			<h1>  ${title} </h1> 
+			<h2>  ${text} </h2> 
+			
+			`
+			virusQueue = virusQueue.splice(x,1)
+			x=virusQueue.length;
+			return
+		}
+	}
+	
+	
+	if (!currentChallenges.length) currentChallenges = shuffle([...challenges])
+	
+	
+	
+	challenge = currentChallenges.pop();
+	if(challenge.type=="normal")
+	{
+		text = challenge.text;
+		title = challenge.title;
+		imgsrc = challenge.image;
+		
+		availablePlayers = [...players];
+		availablePlayers = shuffle(availablePlayers);
+		player = availablePlayers[0];
+		player2 = availablePlayers[1];
+		text = text.replace("#PLAYER",player.name);
+		text = text.replace("#OTHERPLAYER",player2.name);
+		
+		element.onclick = function() {pauseCycle()};
+		element.innerHTML = `
+		<h1>  ${title} </h1> 
+		<h2>  ${text} </h2> 
+		
+		`
+	}
+	if(challenge.type=="virus")
+	{
+		text = challenge.startText;
+		title = challenge.title;
+		imgsrc = challenge.image;
+		
+		availablePlayers = [...players];
+		availablePlayers = shuffle(availablePlayers);
+		player = availablePlayers[0];
+		player2 = availablePlayers[1];
+		text = text.replace("#PLAYER",player.name);
+		text = text.replace("#OTHERPLAYER",player2.name);
+		
+		element.onclick = function() {pauseCycle()};
+		element.innerHTML = `
+		<h1>  ${title} </h1> 
+		<h2>  ${text} </h2> 
+		
+		`
+		virusQueue.push({...challenge})
+		virusQueue[virusQueue.length-1].player = player;
+	}
+	console.log(`round ${round}`);
+
+}
+
+function reset()
+{
+	element = document.getElementById("main");
+	element.onclick = function() {};
+		element.innerHTML = `
+		<h1>   </h1> 
+		<h2>  </h2> 
+		
+		`
+	document.getElementById("playerselector").style.display = 'block';
+	document.getElementById("main").style.display = 'none';
+	round = 0;
+}
+
+function pauseCycle()
+{
+element = document.getElementById("main");
+	if(round==maxRounds)
+	{
+	element.onclick = function() {reset()};
+		element.innerHTML = `
+		<h1>  HET SPEL IS AFGELOPEN! </h1> 
+		<h2>  </h2> 
+		
+		`
+		return;
+	}
+	
+	
+	if(!gamePaused) round += 1;
+	else gamePaused = false;
+	console.log("pause cycle");
+	
+	element.onclick = function() {gameCycle()};
+		element.innerHTML = `
+		<h1>  RONDE ${round}! </h1> 
+		<h2>   </h2> 
+		`
+		
+
+}
+
+function menu()
+{
+	document.getElementById("main").style.display = 'none';
+	document.getElementById("menu").style.display = 'none';
+	document.getElementById("playerselector").style.display = 'block';
+	gamePaused = true;
+}
+
+function randomSelect(arr)
+{
+	return arr[Math.round((arr.length-1)*Math.random())]
+}
+
+function shuffle(array) {
+  let currentIndex = array.length,  randomIndex;
+
+  // While there remain elements to shuffle.
+  while (currentIndex > 0) {
+
+    // Pick a remaining element.
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+
+    // And swap it with the current element.
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex], array[currentIndex]];
+  }
+
+  return array;
+}
+
+</script>
+
+</html>

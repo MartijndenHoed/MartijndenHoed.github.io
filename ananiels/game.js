@@ -86,7 +86,7 @@ challenges =[
     {
         "type": "normal",
         "title": "Kotspact",
-        "text": "Iedereen, sluit een kotspact of neem 8 slokken",
+        "text": "#PLAYER en #OTHERPLAYER, sluit een kotspact of neem 8 slokken",
         "image": null
     },
     {
@@ -158,7 +158,7 @@ challenges =[
     {
         "type": "normal",
         "title": "Half tien laatste bus",
-        "text": "Pak om half tien of zsm. daarna de laatste bus voor minimaal 1 halte of neem 8 slokken",
+        "text": "#PLAYER, pak om half tien of zsm. daarna de laatste bus voor minimaal 1 halte of neem 8 slokken",
         "image": null
     },
     {

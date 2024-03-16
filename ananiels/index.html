@@ -56,7 +56,7 @@ font-family: myFirstFont;
   font-size: 100%;
   height: 44px;
   line-height: 1.15;
-  margin: 12px 0 0;
+  margin: 12px 12px 0 0;
 }
 
 
@@ -80,11 +80,11 @@ font-family: myFirstFont;
 <h1>  PIKKOLO </h1> 
 <button onclick="startGame(this)"> start spel </button>
 <h2>  RONDES </h2> 
-<input type="text" placeholder="20" value='20' id='maxRounds'>   </input>
+<input type="text" placeholder="40" value='40' id='maxRounds'>   </input>
 <h2>  VOEG SPELERS TOE </h2> 
 	<div id="playerList">
 		<div>
-			<input type="text" placeholder="enter name">   </input> <button onclick=	"removePlayer(this)"> verwijder speler </button>
+			<br> <input type="text" placeholder="enter name">   </input> <button onclick=	"removePlayer(this)"> verwijder speler </button>
 		
 		</div>
 	</div>
@@ -92,7 +92,7 @@ font-family: myFirstFont;
 </div>
 
 <div id="main" class="main" style='display:none'>
-<h1>  Piccolo </h1> 
+<h1>  Pikkolo </h1> 
 
 </div>
 
@@ -105,8 +105,8 @@ font-family: myFirstFont;
 <script>
 virusColor = "#ff00ff"; //paars
 pauseColor= "#FFC300"; //geel
-resetColor= "#ff0044"; //magenta
-gameColor = "#00ff55"; //groen
+gameColor= "#ff0044"; //magenta
+normalColor = "#00ff55"; //groen
 
 
 round = 0;
@@ -114,10 +114,14 @@ virusQueue = [];
 currentChallenges = [];
 gamePaused = false;
 
+window.onbeforeunload = function() {
+  return "Data will be lost if you leave the page, are you sure?";
+};
+
 function removePlayer(button)
 {
 parent = button.parentElement;
-button.parentElement.children[0].value = "";
+button.parentElement.children[1].value = "";
 
 
 console.log(button.parentElement.children[0])
@@ -133,7 +137,7 @@ parent = button.parentElement;
 //playerListElement = parent.children[1];
 playerListElement = document.getElementById("playerList");
 var newPlayer = document.createElement("div");
-newPlayer.innerHTML += '<input type="text" placeholder="niels zopdam">   </input> <button onclick="removePlayer(this)">  verwijder speler </button>'; 
+newPlayer.innerHTML += '<br> <input type="text" placeholder="niels zopdam">   </input> <button onclick="removePlayer(this)">  verwijder speler </button>'; 
 
 playerListElement.appendChild(newPlayer);
 }
@@ -144,7 +148,7 @@ function startGame(button)
 	players = [];
 	for(var x=0;x<playerListElement.children.length;x++)
 	{	
-		if(playerListElement.children[x].children[0].value) players.push({name:playerListElement.children[x].children[0].value});
+		if(playerListElement.children[x].children[1].value) players.push({name:playerListElement.children[x].children[1].value});
 		
 	}
 	players = players.filter((name) => name != '')
@@ -154,7 +158,8 @@ function startGame(button)
 	if(players.length < 2)
 	{
 		alert("Yo je kan dit niet spelen in je eentje, ga vrienden zoeken ofzo loner");
-		return;
+	
+	return;
 	}
 	console.log("starting with " + String(players.length) + " players...");
 	document.getElementById("playerselector").style.display = 'none';
@@ -170,38 +175,69 @@ function startGame(button)
 function gameCycle()
 {
 	element = document.getElementById("main");
-	
+	console.log(virusQueue);
 	for(var x=0;x<virusQueue.length;x++)
 	{
 		virusQueue[x].rounds-=1;
-		if(virusQueue[x].rounds==0) 
+		if(virusQueue[x].rounds<=0) 
 		{
 		
 			document.getElementById("body").style.backgroundColor = virusColor;
 			text = virusQueue[x].endText;
 			text = text.replace("#PLAYER",virusQueue[x].player.name);
+			text = text.replace("#OTHERPLAYER",virusQueue[x].player2.name);
 			title = virusQueue[x].title;
 			imgsrc = virusQueue[x].image;
 			
 			element.onclick = function() {gameCycle()};
 			element.innerHTML = `
-			<h1>  ${title} </h1> 
-			<h2>  ${text} </h2> 
+			<h1>  VIRUS OVER</h1> 
+		<h2>  ${title} </h2> 
+		<h3>  ${text} </h3> 
 			
 			`
-			virusQueue = virusQueue.splice(x,1)
+			virusQueue.splice(x,1);
 			x=virusQueue.length;
 			return
 		}
 	}
 	
-	
-	if (!currentChallenges.length) currentChallenges = shuffle([...challenges])
-	
+\	if (!currentChallenges.length) currentChallenges = shuffle([...challenges])
 	
 	
-	challenge = currentChallenges.pop();
+	if(virusQueue.length>1)
+	{
+		var i=0;
+		while(currentChallenges[0].type=='virus' && i<100)
+		{
+			i+=1;
+			currentChallenges = shuffle([...currentChallenges]);
+		}
+	}
+	challenge = currentChallenges.shift();
 	if(challenge.type=="normal")
+	{
+		document.getElementById("body").style.backgroundColor = normalColor;
+		text = challenge.text;
+		title = challenge.title;
+		imgsrc = challenge.image;
+		
+		availablePlayers = [...players];
+		availablePlayers = shuffle(availablePlayers);
+		player = availablePlayers[0];
+		player2 = availablePlayers[1];
+		//console.log(availablePlayers);
+		text = text.replaceAll("#PLAYER",player.name);
+		text = text.replaceAll("#OTHERPLAYER",player2.name);
+		
+		element.onclick = function() {pauseCycle()};
+		element.innerHTML = `
+		<h1>  ${title} </h1> 
+		<h2>  ${text} </h2> 
+		
+		`
+	}
+	if(challenge.type=="game")
 	{
 		document.getElementById("body").style.backgroundColor = gameColor;
 		text = challenge.text;
@@ -212,13 +248,15 @@ function gameCycle()
 		availablePlayers = shuffle(availablePlayers);
 		player = availablePlayers[0];
 		player2 = availablePlayers[1];
-		text = text.replace("#PLAYER",player.name);
-		text = text.replace("#OTHERPLAYER",player2.name);
+		//console.log(availablePlayers);
+		text = text.replaceAll("#PLAYER",player.name);
+		text = text.replaceAll("#OTHERPLAYER",player2.name);
 		
 		element.onclick = function() {pauseCycle()};
 		element.innerHTML = `
-		<h1>  ${title} </h1> 
-		<h2>  ${text} </h2> 
+		<h1>  SPEL </h1> 
+		<h2>  ${title} </h2> 
+		<h3>  ${text} </h3>  
 		
 		`
 	}
@@ -233,17 +271,19 @@ function gameCycle()
 		availablePlayers = shuffle(availablePlayers);
 		player = availablePlayers[0];
 		player2 = availablePlayers[1];
-		text = text.replace("#PLAYER",player.name);
-		text = text.replace("#OTHERPLAYER",player2.name);
+		text = text.replaceAll("#PLAYER",player.name);
+		text = text.replaceAll("#OTHERPLAYER",player2.name);
 		
 		element.onclick = function() {pauseCycle()};
 		element.innerHTML = `
-		<h1>  ${title} </h1> 
-		<h2>  ${text} </h2> 
+		<h1>  VIRUS </h1> 
+		<h2>  ${title} </h2> 
+		<h3>  ${text} </h3> 
 		
 		`
 		virusQueue.push({...challenge})
 		virusQueue[virusQueue.length-1].player = player;
+		virusQueue[virusQueue.length-1].player2 = player2;
 	}
 	console.log(`round ${round}`);
 
@@ -260,7 +300,7 @@ function reset()
 		`
 	document.getElementById("playerselector").style.display = 'block';
 	document.getElementById("main").style.display = 'none';
-	round = 1;
+	round = 0;
 }
 
 function pauseCycle()
@@ -268,7 +308,7 @@ function pauseCycle()
 element = document.getElementById("main");
 	if(round==maxRounds)
 	{
-	document.getElementById("body").style.backgroundColor = resetColor;
+	document.getElementById("body").style.backgroundColor = pauseColor;
 	element.onclick = function() {reset()};
 		element.innerHTML = `
 		<h1>  HET SPEL IS AFGELOPEN! </h1> 

@@ -242,7 +242,7 @@ challenges =[
     {
         "type": "normal",
         "title": "Hele jaar bruin",
-        "text": "#PLAYER en #ORHERPLAYER, degene die minder hele jaar bruin is neemt 4 slokken",
+        "text": "#PLAYER en #OTHERPLAYER, degene die minder hele jaar bruin is neemt 4 slokken",
         "image": null
     },
     {

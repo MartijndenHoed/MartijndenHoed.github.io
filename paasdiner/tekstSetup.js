@@ -16,6 +16,12 @@ var textParser = {
 		
 		var subText = input.toLowerCase().split(" ");
 		var action = this.actionTranslator(subText[0]);
+		var request = false;
+		if(this.requestChecker(subText[subText.length-1]))
+		{
+			request = true;
+			subText.pop();
+		}
 		
 		var accusatief = new word();
 		var datief = new word();
@@ -118,7 +124,7 @@ var textParser = {
 		console.log(datief);
 		console.log("");
 		
-		actions.executeAction(action,accusatief,datief);
+		actions.executeAction(action,accusatief,datief,0,request);
 		//this.displayText("&lt;command received");
 		
 		
@@ -177,6 +183,10 @@ var textParser = {
 		if(prepos=="door") return 8;
 		return 0;
 	},
+	requestChecker: function(word) {
+		if(word=="alsjeblieft"||word=="please") return 1;
+		return 0;
+	},
 	
 	displayText: function(input,isOutput) {
 		if(this.storedLines.unshift(input)>maxLines) this.storedLines.pop();
@@ -202,8 +212,8 @@ var textParser = {
 		string += items[items.length-2] + " en ";
 		string += items[items.length-1];
 		return string;
-	}
-	
+	},
+	irritation: 0
 	
 	
 	
@@ -221,7 +231,31 @@ function word() {
 }
 
 var actions = {
-	executeAction: function(action,accusatief,datief,ablatief) {
+	executeAction: function(action,accusatief,datief,ablatief,request) {
+		if(request)
+		{
+			textParser.irritation=0;
+		}
+		
+		if(textParser.irritation==10)
+		{
+			textParser.displayText("Yo ik ben je bitch niet, zeg alsjeblieft of ik doe niks meer.",1);
+			textParser.irritation+=1;
+			return 0;
+		}
+		if(textParser.irritation==11)
+		{
+			textParser.displayText("Ben je blind en doof ofzo?",1);
+			textParser.irritation+=1;
+			return 0;
+		}
+		if(textParser.irritation>11)
+		{
+			textParser.displayText("Nee.",1);
+			textParser.irritation+=1;
+			return 0;
+		}
+		
 		
 		if(accusatief.noun)
 		{
@@ -246,6 +280,7 @@ var actions = {
 					else
 					{
 						textParser.displayText("Hoe hard je ook probeert, er valt niks leesbaars uit op te maken",true);
+						textParser.irritation+=1;
 					}
 				}
 				else{
@@ -272,6 +307,7 @@ var actions = {
 						if(item2==false) 
 						{
 							textParser.displayText("Je hebt niets dat daarop lijkt",true);
+							textParser.irritation+=1;
 							break;
 						}
 					}
@@ -318,6 +354,7 @@ var actions = {
 						else
 						{
 							textParser.displayText("Dat gaat je niet lukken m'n jongen.",1);
+							textParser.irritation+=1;
 							break;
 						}
 					}
@@ -388,12 +425,13 @@ var actions = {
 					}
 					else{
 						textParser.displayText("Euhh ja dat is er niet",true);
+						textParser.irritation+=1;
 					}
 				}
 				else
 				{
 					textParser.displayText("Euhh ja dat is er niet",true);
-					
+					textParser.irritation+=1;
 					
 				}
 			
@@ -452,6 +490,7 @@ var actions = {
 					else
 					{
 						textParser.displayText("Hoeveel vastberadenheid je ook hebt, daar kan je niet heen",true);
+						textParser.irritation+=1;
 					}
 				}
 			
@@ -461,7 +500,7 @@ var actions = {
 			case "help":
 			
 				textParser.displayText("Toegestaane acties zijn: kijk, bekijk, lees, pak, ga, steek aan, open, praat, geef, help. Combineer deze werkwoorden met andere woorden om acties te vormen, voorbeelden: 'kijk rond', 'bekijk [object]', 'pak [object] op' enz");
-			
+				textParser.irritation+=1;
 			
 			break;
 			
@@ -474,7 +513,8 @@ var actions = {
 					}
 					else if(!item.burnable)
 					{
-						textParser.displayText("Hoe wil je " + item.names[2] + " nou weer aansteken?",true)
+						textParser.displayText("Hoe wil je " + item.names[2] + " nou weer aansteken?",true);
+						textParser.irritation+=1;
 					}
 					else if(item.lit)
 					{
@@ -491,7 +531,7 @@ var actions = {
 							
 							if(!item2.lit)
 							{
-								textParser.displayText("Hoe creeert men vuur uit dat wat niet brandt?",true);
+								textParser.displayText("'" + "Hoe creeert men vuur uit dat wat niet brandt?' ~Confucius",true);
 							}
 							else {
 								textParser.displayText("Voorzichtig steek je " + item.names[1] + " aan terwijl een stekende pijn zich door je vingertoppen beweegt: je hebt je hand verbrand.",true);
@@ -504,7 +544,7 @@ var actions = {
 						else
 						{
 							textParser.displayText("Je moet wel iets hebben waarmee je " + item.names[1] + " aan wilt steken. ",1);
-							
+							textParser.irritation+=1;
 						}
 						
 						
@@ -524,6 +564,7 @@ var actions = {
 					else if(!item || !item.discovered)
 					{
 						textParser.displayText("Ga niet steken gast",1);
+						textParser.irritation+=1;
 					}
 
 					else {
@@ -561,7 +602,7 @@ var actions = {
 						else
 						{
 							textParser.displayText("Je hebt toch helemaal geen " + datief.noun + ".",1);
-							
+							textParser.irritation+=1;
 						}
 						
 						
@@ -576,6 +617,7 @@ var actions = {
 				else {
 					
 					textParser.displayText("Wat wil je nou weer openen jij slijkbrein.",1);
+					textParser.irritation+=1;
 				}
 			
 			
@@ -584,7 +626,12 @@ var actions = {
 			case "praat":
 				if(!datief.noun)
 				{
-					if(accusatief.noun) textParser.displayText("Dat moment dat zelfs dit programma nog kan herkennen dat je grammatica shit is. Praat Nederlands.",1);
+					if(accusatief.noun) 
+					{
+						if(accusatief.noun=="Nederlands"||accusatief.noun=="nederlands") textParser.displayText("Kappen nou...",1);
+						else textParser.displayText("Dat moment dat zelfs dit programma nog kan herkennen dat je grammatica shit is. Praat Nederlands.",1);
+						textParser.irritation+=1;
+					}
 					else textParser.displayText("Met wie denk je te willen praten?",1);
 					break;
 				}
@@ -596,7 +643,7 @@ var actions = {
 				}
 				else
 				{
-					textParser.displayText("Je ziet geen " + datief.noun + " om je heen, ben je misschien schizofreen?",1);
+					textParser.displayText("Je ziet geen " + datief.noun + " om je heen, ben je misschien schizo?",1);
 				}
 			break;
 			
@@ -620,6 +667,7 @@ var actions = {
 				else
 				{
 					textParser.displayText("Je ziet geen " + datief.noun + " om je heen, ben je misschien schizofreen?",1);
+					textParser.irritation+=1;
 				}
 			break;
 			

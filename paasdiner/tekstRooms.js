@@ -86,7 +86,6 @@ var world = {rooms:
 			player.hasLooked = false;
 			textParser.displayText(this.intro,true);
 		},
-		connections:{zolder:"zolder"}
 	},
 		{
 		ID: "zolder",
@@ -174,8 +173,34 @@ var world = {rooms:
 	},
 		{
 		ID: "boerderij",
-		intro:"bruh",
-		description: "Jbruh",
+		intro:"Je staat bij de wereldberoemde kinderboerderij van het keukenhofbos. Het doet je denken aan die ene keer dat Jeff en Nelis naar de kinderboerderij gingen en foto's namen van een geit ofzo. Er staat een grote stal voor de dieren en in het noorden is de fietsenstalling",
+		description: "Je kijkt rond en een aantal vlagen van herinneringen schieten je voorbij. Gisteravond, nadat de meeste dates al weg waren, gingen jullie hierheen voor de afterparty. De wijnflessen en sterke drank ligt nog op de grond en er ligt ook wat spaghetti. Er staat een grote stal waarvan de deur in een dronken bui is opgengebroken.",
+		items:[],
+		connections:{},
+		actors: [],
+		load: function(direction) {
+			player.room = this;
+			player.hasLooked = false;
+			textParser.displayText(this.intro,true);
+		}
+		},
+		{
+		ID: "stal",
+		intro:"",
+		description: "",
+		items:[],
+		connections:{},
+		actors: [],
+		load: function(direction) {
+			player.room = this;
+			player.hasLooked = false;
+			textParser.displayText(this.intro,true);
+		}
+		},
+				{
+		ID: "fietsenstalling",
+		intro:"",
+		description: "",
 		items:[],
 		connections:{},
 		actors: [],
@@ -241,7 +266,7 @@ var world = {rooms:
 	{
 		ID: "WC",
 		intro:"Je staat nu bij het toiletgebouw, wat naast het veld staat. Je hoort dat Lars ligt te creperen binnen",
-		description: "Over liggen kotsresten en het is echt heel erg ranzig. Lars zit er ook niet best uit, maar gelukkig is hij wel gewend te barfen.",
+		description: "Overal liggen kotsresten en het is echt heel erg ranzig. Lars zit er ook niet best uit, maar gelukkig is hij wel gewend te barfen.",
 		items:[],
 		connections:{veld:"hub"},
 		actors: [Lars],

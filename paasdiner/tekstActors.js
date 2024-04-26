@@ -128,6 +128,59 @@ var Gijs = {
 		
 	}
 }
+
+var Matthijs = {
+	names: ["Matthijs","matthijs","Mathijs","mathijs","Mat","mat","neo","Neo"],
+	description: "Matthijs lijkt de enige te zijn die geen kater heeft opgelopen, als je hem beter bekijkt valt het je echter op dat hij een halfvolle fles jenever bij zich heeft; Hij heeft geen kater want hij is nog steeds dronken.",
+	visible: true,
+	giveItem: function(item) {
+		textParser.displayText("'Hou dat maar, ik heb me handen al vol aan Moniek.'",true);
+	},
+	talk: function() {
+		textParser.displayText("'Gecondoleerd met je date'",true);
+		
+	}
+}
+
+var Koen = {
+	names: ["Koen","koen"],
+	description: "Koen ziet er echt heel beroerd uit. Hij heeft zijn handen op zijn buik en staart ongelukkig voor zich uit. Het doet je denken aan die trip naar Montenegro.",
+	visible: true,
+	giveItem: function(item) {
+		textParser.displayText("Koen ziet in zijn ooghoeken dat je iets wilt geven, maar hij heeft niet de energie om het aan te pakken",true);
+	},
+	talk: function() {
+		textParser.displayText("Koen ratelt iets incoherents waaruit je opmaakt dat hij buikpijn heeft.",true);
+		
+	}
+}
+
+var Jer = {
+	names: ["Jeroen","Jer","jer","Jer","Claire","claire"],
+	description: "Jeroen en Claire ",
+	visible: true,
+	giveItem: function(item) {
+		textParser.displayText("'Jeroen en Claire'",true);
+	},
+	talk: function() {
+		textParser.displayText("' '",true);
+		
+	}
+}
+
+var Nelis = {
+	names: ["Niels","niels","Nielert","nielert","Nelis","nelis"],
+	description: "",
+	visible: true,
+	giveItem: function(item) {
+		textParser.displayText("''",true);
+	},
+	talk: function() {
+		textParser.displayText("' '",true);
+		
+	}
+}
+
 function larsEvent()
 {
 	string = `Een man fietst over een landweggetje en ziet opeens een kip met drie poten voorbij rennen. Hij stapt af en probeert de kip te pakken, maar steeds als hij in de buurt komt zet de kip het op een rennen. De man volgt de kip en komt bij een boerderij uit. Daar ziet hij een boer staan. Hij vraagt hem: "Is die kip van u?" "Ja," antwoordt de boer. De man zegt: "Weet u dat het dier drie poten heeft?" "Ja, dat klopt," antwoordt de boer weer, "en dat komt zo: ik woon hier met mijn vrouw en zoon, en steeds als we kip aten hadden we ruzie over wie de pootjes mocht opeten. Na lang onderzoek is het ons gelukt een kip met drie poten te fokken". De man vraagt: "En is het nou over met die ruzies?" De boer antwoordt: "Dat weet ik niet, want het is ons nog steeds niet gelukt het beest te vangen."`

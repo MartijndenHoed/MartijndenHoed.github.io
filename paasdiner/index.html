@@ -1,9 +1,85 @@
 <html>
 <title>Paasdiner simulator</title>
+<style>
+@font-face {
+  font-family: myFirstFont;
+  src: url(DOS.ttf);
+}
 
+body {
+//font-family: myFirstFont;
+  background-color: black;
+  background-image: radial-gradient(
+    rgba(0, 20, 0, 0.75), black 120%
+  );
+  height: 100vh;
+  margin: 10;
+  overflow: hidden;
+  padding: 2rem;
+  color: white;
+  font: 1.3rem myFirstFont, monospace;
+  //font: 1.0rem Inconsolata;
+  text-shadow: 0 0 5px #B0C8B0;
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(black, 0.15),
+      rgba(black, 0.15) 1px,
+      transparent 1px,
+      transparent 2px
+    );
+    pointer-events: none;
+  }
+}
+::selection {
+  background: #555555;
+  text-shadow: none;
+}
+pre {
+  margin: 0;
+}
+div {
+position: relative;
+top: 30;
+}
+textarea:focus, input:focus{
+    outline: none;
+}
+input {
+//font-family: myFirstFont;
+position: relative;
+bottom: -32;
+box-shadow: none;
+border:0;
+  background-color:rgba(0, 0, 0, 0);
+  width: 100%;
+  overflow: hidden;
+  color: white;
+  font: 1.3rem myFirstFont;
+  text-shadow: 0 0 5px #B0C8B0;
+  &::after {
+    content: "";
+    
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(black, 0.15),
+      rgba(black, 0.15) 1px,
+      transparent 1px,
+      transparent 2px
+    );
+    pointer-events: none;
+  }
+}
+</style>
 <div id="output"> </div>
 <input type='text' id="input" onkeydown = "if (event.keyCode == 13)
-                        inputHandler()"   > </input>
+                        inputHandler()"  autofocus> </input>
 
 <script src='tekstSetup.js'> </script>
 <script src='tekstItems.js'> </script>

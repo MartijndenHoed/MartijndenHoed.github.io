@@ -53,13 +53,33 @@ var moker = {
 }
 
 var bierfles = {
-	names: ["bierflesje", "het bierflesje", "een bierflesje","flesje","bier"],
+	names: ["bierflesje", "het bierflesje", "een bierflesje","flesje","bier","biertje","bierfles"],
 	adjectives: [],
-	description: "Een half opgedranken bierflesje met een rietje van Gijs erin",
-	additions: []
-	
-	
-	
+	description: "Een ongeopend flesje Brouwers. Het verbaast je dat iemand dit zou achterlaten.",
+	additions: [],
+	drinkable: false,
+}
+
+var ice = {
+	names: ["ice", "de ice", "een ice"],
+	adjectives: [],
+	empty:false,
+		activeDescription: function() {
+		if(!this.empty)
+		{
+			return "Een halflege fles ice van Niels. De prik is er helemaal uit en er zit amper alcohol in.";
+			
+		}
+		else
+		{
+			
+			return "Een lege fles ice, dit kan direct de glasbak in."
+		}
+	},
+	additions: [],
+		undiscoverable:true,
+	discovered: true,
+	drinkable: true,
 }
 
 var flesopener = {
@@ -87,8 +107,39 @@ var jonko = {
 	additions: [],
 	burnable:true,
 	lit:false
-	
-	
+}
+var eend = {
+	names: ["eend", "de eend", "een eend","eenden"],
+	adjectives: [],
+	description: "Ja het is een eend I guess.",
+	notTakeable: "Laat die dieren met rust yo.",
+	additions: [],
+	burnable:false,
+	lit:false,
+	undiscoverable:true,
+	discovered: true
+}
+var krat = {
+	names: ["krat", "de krat", "een krat","bier"],
+	adjectives: [],
+	description: "De twee kratten zijn gevuld met lege flesjes Brouwers, als je goed kijkt ontbreekt er 1 flesje in het bovenste kratje.",
+	notTakeable: "Je hebt niet de kracht om 2 kratten te tillen. Zwak.",
+	additions: [],
+	burnable:false,
+	lit:false,
+	undiscoverable:true,
+	discovered: true
+}
+var kasteelItem = {
+	names: ["kasteel", "het kasteel", "een kasteel"],
+	adjectives: [],
+	description: "Je weet wel hoe kasteel keukenhof eruit ziet.",
+	notTakeable: "Jesse dat is scheikundig gezien unmeugelijk",
+	additions: [],
+	burnable:false,
+	lit:false,
+	undiscoverable:true,
+	discovered: true
 }
 var paasticket = {
 	names: ["paasticket", "de paasticket", "een paasticket","ticket"],
@@ -97,8 +148,6 @@ var paasticket = {
 	additions: [],
 	burnable:true,
 	lit:false
-	
-	
 }
 
 var chips = {
@@ -138,6 +187,17 @@ var tapijt = {
 	discovered: true
 }
 
+var drank = {
+	names: ["jenever", "de jenever", "jenever","fles","drank"],
+	description: "Een halflege fles van de allergoedkoopste jenever. De geur alleen al doet je bijna kotsen.",
+	additions: [],
+	activeDescription: function() {return "Op de grond liggen lege flessen drank, Matthijs is blijkbaar niet gaan glasbakken gister."},
+	undiscoverable:false,
+	discovered: true,
+	drinkable: false,
+}
+
+
 var fakkel = {
 	names: ["fakkel", "de fakkel", "een fakkel"],
 	adjectives:[],
@@ -162,7 +222,15 @@ var fakkel = {
 		
 		
 }
-
+ 
 	
+var fietssleutel = {	
+	names: ["fietssleutel", "de fietssleutel", "een fietssleutel","sleutel"],
+	adjectives: [],
+	description: "Het is je fietssleutel, die onder de kots zit. Fucking ranzig. ",
+	additions: [],
+	burnable:true,
+	lit:false,
+	discovered: true,
 	
-
+}

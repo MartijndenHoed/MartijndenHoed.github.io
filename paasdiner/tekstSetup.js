@@ -133,14 +133,14 @@ var textParser = {
 	actionTranslator: function(action) {
 		if(action=="bekijk") return "kijk";
 		if(action=="neem") return "pak";
-		if(action=="loop"||action=="wandel") return "ga";
+		if(action=="loop"||action=="wandel"||action=="stap"||action=="spring") return "ga";
 		if(action=="raap") return "pak";
 		if(action=="zet") return "schakel";
 		
 		return action;
 	},
 	checkDirective: function(partikel) {
-		if(partikel=="naar") return true;
+		if(partikel=="naar"||partikel=="op"||partikel=="in"||partikel=="uit"||partikel=="voor") return true;
 		
 		return 0;
 	},
@@ -165,10 +165,11 @@ var textParser = {
 	},
 	checkSplitVerb: function(action) {
 		if(action=="pak") return ["op"];
+		if(action=="drink") return ["op"];
 		if(action=="steek") return ["aan"];
 		if(action=="gooi") return ["weg"];
 		if(action=="schakel") return ["uit","aan"];
-		if(action=="ga") return ["in"];
+		if(action=="ga") return ["in","op","uit"];
 		
 		return false;
 	},
@@ -181,24 +182,68 @@ var textParser = {
 		if(prepos=="onder") return 6;
 		if(prepos=="in") return 7;
 		if(prepos=="door") return 8;
+		if(prepos=="op") return 9;
 		return 0;
 	},
 	requestChecker: function(word) {
 		if(word=="alsjeblieft"||word=="please") return 1;
 		return 0;
 	},
-	
+	qeueuedText: "",
+	displayedText:"",
+	lineRenderer: false,
+	displayText: function(input="",isOutput=false) {
+		if(input)
+		{
+			if(isOutput) input = "&lt;".concat(input);
+			if(input.startsWith(">")) this.displayedText += input + " <br>"
+			else this.qeueuedText += input + " <br>"
+		}
+		this.displayedText += this.qeueuedText.slice(0,1);
+		this.qeueuedText = this.qeueuedText.slice(1);
+		
+		
+		
+		var lines = this.displayedText.split("<br>");
+		if(lines.length>maxLines)
+		{
+			//console.log(this.displayedText);
+			this.displayedText = "";
+			//console.log(lines);
+			for(var i=1;i<lines.length-1;i++)
+			{
+				this.displayedText += lines[i] + "<br>";
+			}
+			//console.log(this.displayedText);
+		}
+		
+		var totalLinesString = this.displayedText;
+		var div = document.getElementById("output");
+		div.innerHTML = totalLinesString;
+		//console.log(this.qeueuedText);
+		
+		
+		if(this.qeueuedText) setTimeout(function() {textParser.displayText();},5)
+		
+	},
+	/*
 	displayText: function(input,isOutput) {
 		if(this.storedLines.unshift(input)>maxLines) this.storedLines.pop();
 		if(isOutput) this.storedLines[0] = "&lt;".concat(this.storedLines[0]);
 		var div = document.getElementById("output");
 		var totalLinesString = "";
+		
+		
+		
+		
 		for(var i=this.storedLines.length-1;i>=0;i--)
 		{
 			totalLinesString=totalLinesString.concat(this.storedLines[i] + " <br /> ");
 		}
 		div.innerHTML = totalLinesString;
+		
 	},
+	*/
 	
 	listItems: function(items) {
 		if(items.length ==0) return false;
@@ -232,6 +277,8 @@ function word() {
 
 var actions = {
 	executeAction: function(action,accusatief,datief,ablatief,request) {
+		player.score--;
+		if(player.score<0) player.score=0;
 		if(request)
 		{
 			textParser.irritation=0;
@@ -293,9 +340,61 @@ var actions = {
 			
 			
 			break;
+			case "drink":
+
+			//textParser.displayText("gelezen");
+				
+				if(item && item.discovered)
+				{
+					if(item.hasOwnProperty("drinkable"))
+					{
+						if(item.drinkable)
+						{
+							if(!item.empty)
+							{
+							textParser.displayText("Je hebt echt geen plek in je maag hiervoor, maar oke dan maar. Je forceert het je strot in na een paar minuten weet je zeker dat je het binnen kan houden.",true);
+							item.empty = true;
+							}
+							else{
+								textParser.displayText("Yo die is leeg.",true);
+							}
+						}
+						else{
+							textParser.displayText("Je probeert het, maar de geur van alcohol tiggert een pavlov reactie en zorgt dat je meteen barft. ",true);
+						}
+					}
+					else
+					{
+						textParser.displayText("Hoe de fuck wil je dat drinken.",true);
+						textParser.irritation+=1;
+					}
+				}
+				else{
+					
+					
+					if(reach==1) textParser.displayText("Je hebt niks dat ook maar lijkt op " + accusatief.raw,true);
+					if(reach==2) textParser.displayText("Je ziet niks dat ook maar lijkt op " + accusatief.raw,true);
+				}
+			
+			
+			
+			break;
 			
 			case "kijk":
-				if(accusatief.noun=="rond" || (!accusatief.noun&&datief.preposCode==2))
+				if((accusatief.noun=="buiten" && !datief.noun) )
+				{
+					if(player.room.hasOwnProperty("outsideDescription"))
+					{
+						textParser.displayText(player.room.outsideDescription,true);
+					}
+					else{
+						textParser.displayText("Jesse wat bedoel je in hemelsnaam",true);
+					}
+					break;
+					
+					
+				}
+				else if(accusatief.noun=="rond" || (accusatief.noun=="buiten" &&datief.noun)  ||(!accusatief.noun&&datief.preposCode==2))
 				{
 					var item2 = false;
 					if(datief.noun)
@@ -353,7 +452,7 @@ var actions = {
 						}
 						else
 						{
-							textParser.displayText("Dat gaat je niet lukken m'n jongen.",1);
+							textParser.displayText("Je ziet niets " + datief.prepos +" " +  item2.names[1] ,1);
 							textParser.irritation+=1;
 							break;
 						}
@@ -417,15 +516,30 @@ var actions = {
 				{
 					var item = player.itemSelector(accusatief,3);
 					if(item && item.discovered)
-					{
+					{	
+						if(item.hasOwnProperty("notTakeable"))
+						{
+							textParser.displayText(item.notTakeable,true);
+							
+						}
+						else
+						{
 						player.inventory.add(item);
 						textParser.displayText("Met veel moeite strek je je uit en pak je " +item.names[1],true);
 						item.isTaken=true;
 						player.room.items.splice(player.room.items.indexOf(item),1);
+						}
 					}
 					else{
-						textParser.displayText("Euhh ja dat is er niet",true);
-						textParser.irritation+=1;
+						if(player.itemSelector(accusatief,1))
+						{
+							textParser.displayText("Euhh dat heb je toch al?",true);
+							textParser.irritation+=1;
+						}
+						else{
+							textParser.displayText("Euhh ja dat is er niet",true);
+							textParser.irritation+=1;
+						}
 					}
 				}
 				else
@@ -439,7 +553,7 @@ var actions = {
 			break;
 			
 			case "ga":
-				if(accusatief.mode=="in")
+				if(accusatief.mode=="in"||accusatief.mode=="op"||accusatief.mode=="uit")
 				{
 					if(accusatief.noun==false)
 					{
@@ -489,7 +603,7 @@ var actions = {
 					}
 					else
 					{
-						textParser.displayText("Hoeveel vastberadenheid je ook hebt, daar kan je niet heen",true);
+						textParser.displayText("Yo ik heb geen idee wat je bedoelt daarmee.",true);
 						textParser.irritation+=1;
 					}
 				}
@@ -499,7 +613,7 @@ var actions = {
 			
 			case "help":
 			
-				textParser.displayText("Toegestaane acties zijn: kijk, bekijk, lees, pak, ga, steek aan, open, praat, geef, help. Combineer deze werkwoorden met andere woorden om acties te vormen, voorbeelden: 'kijk rond', 'bekijk [object]', 'pak [object] op' enz");
+				textParser.displayText("Toegestaane acties zijn: kijk, bekijk, lees, pak, ga, steek aan, open, praat, geef, spring, drink, help. Combineer deze werkwoorden met andere woorden om acties te vormen, voorbeelden: 'kijk rond', 'bekijk [object]', 'pak [object] op' enz");
 				textParser.irritation+=1;
 			
 			break;
@@ -632,7 +746,7 @@ var actions = {
 						else textParser.displayText("Dat moment dat zelfs dit programma nog kan herkennen dat je grammatica shit is. Praat Nederlands.",1);
 						textParser.irritation+=1;
 					}
-					else textParser.displayText("Met wie denk je te willen praten?",1);
+					else textParser.displayText("Praten doe je met iemand.",1);
 					break;
 				}
 			
@@ -650,8 +764,8 @@ var actions = {
 			case "geef":
 				if(!datief.noun)
 				{
-					if(accusatief.noun) textParser.displayText("Aan wie denk je dit te willen geven?",1);
-					else textParser.displayText("Wie wil je wat geven?",1);
+					if(accusatief.noun) textParser.displayText("Jesse waar heb je het in hemelsnaam over?",1);
+					else textParser.displayText("Jesse waar heb je het in hemelsnaam over?",1);
 					break;
 				}
 				if(!item)
@@ -684,7 +798,7 @@ var actions = {
 }
 
 var player = {
-	
+	score: 225,
 	
 	inventory: {
 		items:Array(),
@@ -825,8 +939,16 @@ var player = {
 			if(!item)
 			{
 				if(door.locked)
-				{
-					textParser.displayText(door.lockedMessage,1);
+				{	
+					if(player.inventory.search({noun:door.keys[0],adjectives:[]}))
+					{
+						console.log(player.inventory.search({noun:door.keys[0],adjectives:[]}));
+						player.searchRoomById(door.connection).load();
+					}
+					else
+					{
+						textParser.displayText(door.lockedMessage,1);
+					}
 				}
 				else
 				{

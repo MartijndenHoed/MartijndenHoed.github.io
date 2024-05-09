@@ -435,7 +435,7 @@ challenges =[
         "type": "virus",
         "title": "Doorpakken is doorpakken",
         "startText": "#PLAYER, doorpakken is doorpakken, dus neem elke slok dubbel",
-        "endText": null,
+        "endText": "Marco was deze vergeten in te vullen waardoor die crashde vorige keer",
         "rounds": "4",
         "image": null
     },

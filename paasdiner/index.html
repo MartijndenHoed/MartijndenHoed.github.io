@@ -17,9 +17,10 @@ body {
   overflow: hidden;
   padding: 2rem;
   color: white;
-  font: 1.3rem myFirstFont, monospace;
+  font-family: myFirstFont;
+font-size: 1.3rem;
   //font: 1.0rem Inconsolata;
-  text-shadow: 0 0 5px #B0C8B0;
+  text-shadow: 0 0 4px #B0C8B0;
   &::after {
     content: "";
     position: absolute;
@@ -57,24 +58,17 @@ position: relative;
 bottom: -32;
 box-shadow: none;
 border:0;
-  background-color:rgba(0, 0, 0, 0);
-  width: 100%;
-  overflow: hidden;
-  color: white;
-  font: 1.3rem myFirstFont;
-  text-shadow: 0 0 5px #B0C8B0;
-  &::after {
-    content: "";
-    
-    background: repeating-linear-gradient(
-      0deg,
-      rgba(black, 0.15),
-      rgba(black, 0.15) 1px,
-      transparent 1px,
-      transparent 2px
-    );
-    pointer-events: none;
-  }
+background-color:rgba(0, 0, 0, 0);
+width: 100%;
+overflow: hidden;
+color: white;
+font-family: myFirstFont;
+font-size: 1.3rem;
+text-shadow: 0 0 4px #B0C8B0;
+&::after {
+content: "";
+pointer-events: none;
+}
 }
 </style>
 <div id="output"> </div>

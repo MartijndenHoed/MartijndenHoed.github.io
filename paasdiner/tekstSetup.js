@@ -511,7 +511,11 @@ var actions = {
 			break;
 			
 			case "pak":
-			
+				if(player.actorSelector(accusatief.noun))
+				{
+					textParser.displayText(`Je doet een bas-actie en probeert ${accusatief.noun} op te pakken. Verschrikt roept die: 'BAS ZET ME ALSJEBLIEFT NEER'`,true);
+					break;
+				}
 				if(reach==2)
 				{
 					var item = player.itemSelector(accusatief,3);
@@ -612,8 +616,16 @@ var actions = {
 			break;
 			
 			case "help":
-			
-				textParser.displayText("Toegestaane acties zijn: kijk, bekijk, lees, pak, ga, steek aan, open, praat, geef, spring, drink, help. Combineer deze werkwoorden met andere woorden om acties te vormen, voorbeelden: 'kijk rond', 'bekijk [object]', 'pak [object] op' enz");
+				player.helpCounter++;
+				if(player.helpCounter==4)
+				{
+				textParser.displayText("Yo als je zoveel hulp nodig hebt is dit spel misschien te lastig voor je, ga lekker iets simpels als smite spelen ofzo.");
+				player.helpCounter=0;
+				}
+				else
+				{
+					textParser.displayText("Toegestaane acties zijn: kijk, bekijk, lees, pak, ga, steek aan, open, praat, geef, spring, drink, help. Combineer deze werkwoorden met andere woorden om acties te vormen, voorbeelden: 'kijk rond', 'bekijk [object]', 'pak [object] op' enz.");
+				}
 				textParser.irritation+=1;
 			
 			break;
@@ -768,6 +780,7 @@ var actions = {
 					else textParser.displayText("Jesse waar heb je het in hemelsnaam over?",1);
 					break;
 				}
+				item = player.itemSelector(accusatief,1)
 				if(!item)
 				{
 					textParser.displayText("Je moet wel iets hebben wat je wilt geven",1);
@@ -799,7 +812,7 @@ var actions = {
 
 var player = {
 	score: 225,
-	
+	helpCounter:0,
 	inventory: {
 		items:Array(),
 		maxSize:20,

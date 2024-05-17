@@ -41,6 +41,16 @@ var steen = {
 	
 };
 
+var kaak = {
+	names:["kaakbot","het kaakbot","een kaakbot","bot","kaak"],
+	adjectives: [],
+	description:"Het lijkt op een menselijk kaakbot met een breuk erin.",
+	additions: []
+	
+	
+};
+
+
 
 var moker = {
 	names: ["moker", "de moker", "een moker"],
@@ -58,6 +68,149 @@ var bierfles = {
 	description: "Een ongeopend flesje Brouwers. Het verbaast je dat iemand dit zou achterlaten.",
 	additions: [],
 	drinkable: false,
+}
+
+var brug = {
+	names: ["brug", "de brug", "een brug","bruggetje"],
+	adjectives: [],
+	description: "Het bruggetje ziet er best wel ziek uit, het heeft echt zo'n boog en van die stenen en shit.",
+	additions: [],
+	notTakeable: "Jesse dat is scheikundig gezien unmeugelijk",
+	additions: [],
+	burnable:false,
+	lit:false,
+	undiscoverable:true,
+	discovered: true		
+}
+
+var vijver = {
+	names: ["vijver", "de vijver", "een vijver","bruggetje"],
+	adjectives: [],
+	description: "Ja het is echt zo'n gat met water erin.         *kuch kuch* je moeder gister ook *kuch kuch*",
+	additions: [],
+	notTakeable: "Jesse dat is scheikundig gezien unmeugelijk.",
+	additions: [],
+	burnable:false,
+	lit:false,
+	undiscoverable:true,
+	discovered: true		
+}
+
+var bos = {
+	names: ["bos", "het bos", "een bos","bos"],
+	adjectives: [],
+	description: "Je ziet bomen.",
+	additions: [],
+	notTakeable: "Ben je achterlijk ofzo?",
+	additions: [],
+	burnable:false,
+	lit:false,
+	undiscoverable:true,
+	discovered: true		
+}
+
+var kasteeldeur = {
+	names: ["deur", "de deur", "een deur"],
+	adjectives: [],
+	description: "Het is een klassieke eikenhouten door, met ijzer beslag. Er zit ook een pisvlek van waarschijnlijk Marco op.",
+	additions: [],
+	notTakeable: "Nah man de deur zit echt vast.",
+	additions: [],
+	burnable:false,
+	lit:false,
+	undiscoverable:true,
+	discovered: true		
+}
+
+var hek = {
+	names: ["hek", "het hek", "een hek"],
+	adjectives: [],
+	description: "Het is een hoog stalen hek met prikkeldraad erop, het doet je denken aan het hek tussen Israel en Gaza.",
+	additions: [],
+	notTakeable: "Nah man dat gaat nie.",
+	additions: [],
+	burnable:false,
+	lit:false,
+	undiscoverable:true,
+	discovered: true		
+}
+
+var spoor = {
+	names: ["spoor", "het spoor", "een spoor"],
+	adjectives: [],
+	description: "Het spoor is gemaakt van stalen balken. Hier en daar zie je een bloedvlek of een stuk orgaan liggen.",
+	additions: [],
+	notTakeable: "Yo zo sterk ben je niet.",
+	additions: [],
+	burnable:false,
+	lit:false,
+	undiscoverable:true,
+	discovered: true		
+}
+
+var slingers = {
+	names: ["slingers", "de slingers", "een slinger","ballon","ballonnen"],
+	adjectives: [],
+	description: "Er zit een prijskaartje van de action op, je herinnert je dat jullie dit gister last minute hebben gekocht.",
+	additions: [],
+	notTakeable: "Die zijn niet van jou.",
+	additions: [],
+	burnable:false,
+	lit:false,
+	undiscoverable:true,
+	discovered: true		
+}
+
+var fiets = {
+	names: ["fiets", "de fiets", "een fiets","fietsen"],
+	adjectives: [],
+	description: "De 12 fietsen staan op een rij.",
+	additions: [],
+	notTakeable:"Ze staan allemaal op slot.",
+	additions: [],
+	burnable:false,
+	lit:false,
+	undiscoverable:true,
+	discovered: true		
+}
+
+var boerderij = {
+	names: ["boerderij", "de boerderij", "een boerderij","kinderboerderij","stal"],
+	adjectives: [],
+	description: "Het is een complex van stallen en euhh ja eigenlijk is het maar 1 stal. Er zijn geen dieren want die hebben jullie gister vrij gelaten.",
+	additions: [],
+	notTakeable: "Jesse.",
+	additions: [],
+	burnable:false,
+	lit:false,
+	undiscoverable:true,
+	discovered: true		
+}
+
+var ladder = {
+	names: ["ladder", "de ladder", "een ladder"],
+	adjectives: [],
+	description: "De ladder is glibberig en koud.",
+	additions: [],
+	notTakeable: "Dat ding zit echt teringgoed vast.",
+	additions: [],
+	burnable:false,
+	lit:false,
+	undiscoverable:true,
+	discovered: true		
+}
+
+var spandoek = {
+	names: ["spandoek", "het spandoek", "een spandoek"],
+	adjectives: [],
+	description: "Het is een mooi zwart doek met daarop witte letters, je herinnert je dat dit ding echt veels te veel geld heeft gekocht.",
+	additions: [],
+	notTakeable: "Het hangt te hoog om te pakken.",
+	additions: [],
+	burnable:false,
+	lit:false,
+	undiscoverable:true,
+	discovered: true		
 }
 
 var ice = {

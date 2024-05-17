@@ -141,7 +141,7 @@ var Matthijs = {
 		{
 			if(item.empty)
 			{
-			textParser.displayText("Je geeft de lege fles aan Matthijs en de jongen wordt helemaal gelukkig. Hij zet z'n fles jenever neer en begint met zijn reis naar de glasbak. ",true);
+			textParser.displayText("Je geeft de lege fles aan Neo-Matthijs en de jongen wordt helemaal gelukkig. Hij zet z'n fles jenever neer en begint met zijn reis naar de glasbak. ",true);
 			player.inventory.items.splice(player.inventory.items.indexOf(item),1);
 			player.room.items.push(drank);
 			}
@@ -178,9 +178,14 @@ var Koen = {
 			textParser.displayText("Koen pakt de fles aan en neemt een slok. Zijn gezicht verdraait meteen en hij kotst zijn hele maag leeg. Er glinstert iets in de kots, en als je beter kijkt zie je dat er een sleutel tussen zat.",true);
 			player.room.items.push(fietssleutel);
 		}
+		else if(item==kaak)
+		{
+			textParser.displayText("Koen krijgt een verdrietige blik op zijn gezicht.",true);
+			player.inventory.items.splice(player.inventory.items.indexOf(item),1);
+		}
 		else
 		{
-		textParser.displayText("Koen ziet in zijn ooghoeken dat je iets wilt geven, maar hij heeft niet de energie om het aan te pakken",true);
+		textParser.displayText("Koen staart je vijf minuten lang aan zonder iets te zeggen. De ongemakkelijkheid is om te snijden.",true);
 		}
 	},
 	talk: function() {
@@ -191,10 +196,12 @@ var Koen = {
 
 var Jer = {
 	names: ["Jeroen","Jer","jer","Jer","Claire","claire","jeroen"],
-	description: "Jeroen en Claire ",
+	description: "Jeroen en Claire zitten samen op de grond, het lijkt erop dat Jeroen een McWrap heeft gevonden waar hij nu van aan het genieten is. Claire ziet er nogal misslijk uit.",
 	visible: true,
 	giveItem: function(item) {
-		textParser.displayText("'Jeroen en Claire zitten samen op de grond, het lijkt erop dat Jeroen een McWrap heeft gevonden waar hij nu van aan het genieten is. Claire ziet er nogal misslijk uit.",true);
+		var speech = ["ad impiccare questa ribelle genia d'Italia, ci vuole corda assai. Non ne ha abbastanza il boia. Conrad[1] non ha avuto abbastanza uomini e cannoni per costringerci alla resa. Ci credevano ancora percossi, piegati nella rovina triste di Caporetto e ci hanno trovati in piedi, pronti a tutti i sacrifici. ", "Amate il pane, cuore della casa, profumo della mensa, gioia del focolare. Rispettate il pane, sudore della fronte, orgoglio del lavoro, poema di sacrificio.","Egli era un nomade della vita, un pellegrino che portava nella sua bisaccia poco pane e moltissimi sogni e camminava così, nella sua tempestosa giovinezza, combattendo e prodigandosi, senza chiedere nulla. Leviamoci un momento dalle bassure della vita parlamentare; allontaniamoci da questo spettacolo mediocre e sconfortante; andiamo altrove col nostro pensiero che non dimentica; portiamo altrove il nostro cuore, le nostre angosce segrete, le nostre speranze superbe, e inchiniamoci sulla pietra che, nella desolazione dell'Altipiano di Trieste, segnò il luogo dove Filippo Corridoni cadde in un tumulto e in una rievocazione di vittoria.","Era necessario farci strada con la violenza, con il sacrificio, con il sangue; era necessario stabilire un ordine e una disciplina voluti dalle masse, ma impossibili da ottenere con una propaganda all'acqua di rose, con parole, parole e ancora parole e con ingannevoli battaglie parlamentari e giornalistiche.","Comunichi al senatore Agnelli che nei nuovi stabilimenti Fiat devono esserci comodi e decorosi refettori per gli operai. Gli dica che l'operaio che mangia in fretta e furia vicino alla macchina non è di questo tempo fascista. Aggiunga che l'uomo non è una macchina adibita a un'altra macchina."];
+		speech = speech[Math.floor(Math.random()*speech.length)];
+		textParser.displayText(`Jeroen weigert het aan te nemen, Claire verklaart: '${speech}'`,true);
 	},
 	talk: function() {
 		var speech = ["ad impiccare questa ribelle genia d'Italia, ci vuole corda assai. Non ne ha abbastanza il boia. Conrad[1] non ha avuto abbastanza uomini e cannoni per costringerci alla resa. Ci credevano ancora percossi, piegati nella rovina triste di Caporetto e ci hanno trovati in piedi, pronti a tutti i sacrifici. ", "Amate il pane, cuore della casa, profumo della mensa, gioia del focolare. Rispettate il pane, sudore della fronte, orgoglio del lavoro, poema di sacrificio.","Egli era un nomade della vita, un pellegrino che portava nella sua bisaccia poco pane e moltissimi sogni e camminava così, nella sua tempestosa giovinezza, combattendo e prodigandosi, senza chiedere nulla. Leviamoci un momento dalle bassure della vita parlamentare; allontaniamoci da questo spettacolo mediocre e sconfortante; andiamo altrove col nostro pensiero che non dimentica; portiamo altrove il nostro cuore, le nostre angosce segrete, le nostre speranze superbe, e inchiniamoci sulla pietra che, nella desolazione dell'Altipiano di Trieste, segnò il luogo dove Filippo Corridoni cadde in un tumulto e in una rievocazione di vittoria.","Era necessario farci strada con la violenza, con il sacrificio, con il sangue; era necessario stabilire un ordine e una disciplina voluti dalle masse, ma impossibili da ottenere con una propaganda all'acqua di rose, con parole, parole e ancora parole e con ingannevoli battaglie parlamentari e giornalistiche.","Comunichi al senatore Agnelli che nei nuovi stabilimenti Fiat devono esserci comodi e decorosi refettori per gli operai. Gli dica che l'operaio che mangia in fretta e furia vicino alla macchina non è di questo tempo fascista. Aggiunga che l'uomo non è una macchina adibita a un'altra macchina."];

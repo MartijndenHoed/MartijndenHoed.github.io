@@ -1,3 +1,7 @@
+//heeeeel erg jammer dit
+
+
+
 /*
 
 function Room(description,items) {

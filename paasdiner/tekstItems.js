@@ -1,3 +1,6 @@
+//heeeeel erg jammer dit
+
+
 var book = {
 	names: ["boek", "het boek","een boek"],
 	additions: [],
@@ -149,7 +152,7 @@ var spoor = {
 }
 
 var slingers = {
-	names: ["slingers", "de slingers", "een slinger","ballon","ballonnen"],
+	names: ["slingers", "de slingers", "een slinger","ballon","ballonnen","slinger"],
 	adjectives: [],
 	description: "Er zit een prijskaartje van de action op, je herinnert je dat jullie dit gister last minute hebben gekocht.",
 	additions: [],

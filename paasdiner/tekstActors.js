@@ -1,3 +1,6 @@
+//heeeeel erg jammer dit
+
+
 var NielsOpdam = {
 	names: ["Niels Opdam", "niels", "opdam"],
 	description: "Het ziet eruit alsof Niels helemaal brokko is gegaan, hij is niet echt meer aanspreekbaar.",
@@ -144,6 +147,8 @@ var Matthijs = {
 			textParser.displayText("Je geeft de lege fles aan Neo-Matthijs en de jongen wordt helemaal gelukkig. Hij zet z'n fles jenever neer en begint met zijn reis naar de glasbak. ",true);
 			player.inventory.items.splice(player.inventory.items.indexOf(item),1);
 			player.room.items.push(drank);
+			player.room.actors = [];
+			player.room.description = "Je telt dat er 11 fietsen staan, alle ananielsers waren er gister, en zijn er nog steeds dus. Achter je is de boerderij. ";
 			}
 			else
 			{

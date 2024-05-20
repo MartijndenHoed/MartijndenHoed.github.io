@@ -1,5 +1,9 @@
 "use strict";
 
+
+//heeeeel erg jammer dit
+
+
 var maxLines = 20;
 
 function inputHandler() {
@@ -513,7 +517,7 @@ var actions = {
 			case "pak":
 				if(player.actorSelector(accusatief.noun))
 				{
-					textParser.displayText(`Je doet een bas-actie en probeert ${accusatief.noun} op te pakken. Verschrikt roept die: 'BAS ZET ME ALSJEBLIEFT NEER'`,true);
+					textParser.displayText(`Je probeert ${player.actorSelector(accusatief.noun).names[0]} op te pakken. Verschrikt roept die: 'BAS ZET ME ALSJEBLIEFT NEER'`,true);
 					break;
 				}
 				if(reach==2)

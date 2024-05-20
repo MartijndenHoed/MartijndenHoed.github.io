@@ -30,7 +30,7 @@ var world = {rooms:
 		ID: "hub",
 		intro:"Je staat op een open veld in wat een groot feest lijkt te zijn. In het zuiden zie je een donker bos en in het noorden een groot kasteel. In het westen zie je een kleine vijver en aan de rand van het veld staat een toiletgebouw.",
 		description: "Als je beter kijkt zie je dat er overal ballonnen en slingers hangen. Groot in het midden van het veld staat een spandoek met de dikgedrukte tekst: 'PAASDINER'.",
-		items:[bierfles,slingers,spandoek,vijver,bos],
+		items:[bierfles,slingers,spandoek,vijver,bos,toiletgebouw],
 		connections:{north:"kasteel",kasteel:"kasteel",south:"bos",bos:"bos",west:"vijver",vijver:"vijver",WC:"WC",toiletgebouw:"WC",toilet:"WC",wc:"WC"},
 		load: function(direction) {
 			player.room = this;
@@ -385,7 +385,7 @@ var world = {rooms:
 		ID: "WC",
 		intro:"Je staat nu bij het toiletgebouw, wat naast het veld staat. Je hoort dat Lars ligt te creperen binnen.",
 		description: "Overal liggen kotsresten en het is echt heel erg ranzig. Lars zit er ook niet best uit, maar gelukkig is hij wel gewend te barfen.",
-		items:[],
+		items:[toiletgebouw],
 		connections:{veld:"hub"},
 		actors: [Lars],
 		load: function(direction) {

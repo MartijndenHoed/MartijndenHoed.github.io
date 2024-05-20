@@ -297,6 +297,18 @@ var kasteelItem = {
 	undiscoverable:true,
 	discovered: true
 }
+
+var toiletgebouw = {
+	names: ["toiletgebouw", "het toiletgebouw", "een toiletgebouw","wc","toilet"],
+	adjectives: [],
+	description: "Het is zo'n ranzig klein gebouwtje met twee wc's",
+	notTakeable: "Jesse dat is scheikundig gezien unmeugelijk",
+	additions: [],
+	burnable:false,
+	lit:false,
+	undiscoverable:true,
+	discovered: true
+}
 var paasticket = {
 	names: ["paasticket", "de paasticket", "een paasticket","ticket"],
 	adjectives: [],

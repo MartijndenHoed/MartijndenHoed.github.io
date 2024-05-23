@@ -385,6 +385,11 @@ var actions = {
 			break;
 			
 			case "kijk":
+				if(!accusatief.noun && !datief.noun)
+				{
+					textParser.displayText("huh?",true);
+					break;
+				}
 				if((accusatief.noun=="buiten" && !datief.noun) )
 				{
 					if(player.room.hasOwnProperty("outsideDescription"))

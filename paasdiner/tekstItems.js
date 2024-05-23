@@ -352,6 +352,7 @@ var tapijt = {
 	additions: [],
 	spatialDescriptions: {onder:"Onder het tapijt zie je een groot luik, gelukkig zit er geen slot op."},
 	undiscoverable:true,
+	notTakeable: "Nah man het is echt veels te zwaar",
 	discovered: true
 }
 

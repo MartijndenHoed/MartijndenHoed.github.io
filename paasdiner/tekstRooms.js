@@ -178,7 +178,7 @@ var world = {rooms:
 	{
 		ID: "kelder",
 		intro:"Dit is de kelder van het kasteel. De ladder omhoog geeft toegang tot de kasteelhal.",
-		description: "De kelder is koud en vochtig, en het doet je denken aan de catacomben van de romeinenreis. Aan de wijnrekken kan je afleiden dat dit vroeger de wijnkelder was, maar de laatste flessen wijn die er nog waren zijn vanavond op gegaan. In de schaduw zie je 2 gedaantes zitten.",
+		description: "De kelder is koud en vochtig, en het doet je denken aan de catacomben van de romeinenreis. Aan de wijnrekken kan je afleiden dat dit vroeger de wijnkelder was, maar de laatste flessen wijn die er nog waren zijn vanavond op gegaan. In de schaduw zie je 2 gedaantes zitten, ze lijken op Claire en Jeroen. ",
 		items:[zolderSleutel,flesopener,ladder],
 		connections:{omhoog:"hal",boven:"hal"},
 		load: function(direction) {
